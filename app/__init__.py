@@ -7,18 +7,17 @@ from dotenv import find_dotenv, load_dotenv
 from flask import Flask, redirect, render_template, session, url_for
 from config import Config
 
-# ENV_FILE = find_dotenv()
-# if ENV_FILE:
-#     load_dotenv(ENV_FILE)
+# load .env file
+load_dotenv(find_dotenv())
 
-# # create the flask object
-# app = Flask(__name__)
-# app.secret_key = env.get("APP_SECRET_KEY")
+# get APP_SECRET_KEY from .env file
+APP_SECRET_KEY = env.get("APP_SECRET_KEY")
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
-    app.secret_key = config_class.APP_SECRET_KEY
+    app.secret_key = APP_SECRET_KEY
+
     # Initialize Flask extensions here
 
     # Register blueprints here
@@ -33,7 +32,3 @@ def create_app(config_class=Config):
         return '<h1>Testing the Flask Application Factory Pattern</h1>'
 
     return app
-
-# if __name__ == "__main__":
-#     app.run(host="0.0.0.0", port=env.get("PORT", 3005))
-#     print("Hello World")

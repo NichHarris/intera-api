@@ -9,6 +9,8 @@ import app
 from app.auth import auth
 from config import Config
 
+load_dotenv(find_dotenv())
+AUTH0_CLIENT_SECRET = env.get("AUTH0_CLIENT_SECRET")
 
 # create the Auth0 object
 oauth = OAuth(app.create_app())
@@ -17,7 +19,7 @@ oauth = OAuth(app.create_app())
 oauth.register(
     "auth0",
     client_id=Config.AUTH0_CLIENT_ID,
-    client_secret=Config.AUTH0_CLIENT_SECRET,
+    client_secret=AUTH0_CLIENT_SECRET,
     client_kwargs={
         "scope": "openid profile email",
     },
@@ -27,7 +29,7 @@ oauth.register(
 oauth.register(
     "auth0",
     client_id=Config.AUTH0_CLIENT_ID,
-    client_secret=Config.AUTH0_CLIENT_SECRET,
+    client_secret=AUTH0_CLIENT_SECRET,
     api_base_url=f"https://{Config.AUTH0_DOMAIN}/",
     access_token_url=f"https://{Config.AUTH0_DOMAIN}/oauth/token",
     authorize_url=f"https://{Config.AUTH0_DOMAIN}/authorize",
