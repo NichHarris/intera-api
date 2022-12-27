@@ -1,7 +1,8 @@
 from os import environ as env
+from dotenv import find_dotenv, load_dotenv
 from urllib.parse import quote_plus, urlencode
 from authlib.integrations.flask_client import OAuth
-from dotenv import find_dotenv, load_dotenv
+from auth0.v3.authentication import Users, GetToken
 from flask import Flask, redirect, render_template, session, url_for
 
 import app
@@ -38,9 +39,13 @@ def login():
 def callback():
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
-    # session["userinfo"] = json.loads(
-    #     oauth.auth0.get("userinfo").text
-    # )
+
+    # authenticate the user
+    get_token = GetToken(Config.AUTH0_DOMAIN)
+    user_info = get_token.client_credentials(
+        Config.AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, audience=Config.AUTH0_AUDIENCE
+    )
+    print(user_info)
     return redirect(
         "https://" + Config.AUTH0_DOMAIN
         + "/v2/logout?"
