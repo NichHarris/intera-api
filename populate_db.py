@@ -49,7 +49,7 @@ def populate_rooms(db):
             print(f'Room not created') 
 
 def populate_msgs(db):
-    rooms = db.rooms
+    rooms = db.room # needs to be changed to a method that gets all the rooms
     for room_id in rooms:
         for _ in range(n):
             host_id = random.choice(host_user_ids)        
