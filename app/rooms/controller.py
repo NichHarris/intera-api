@@ -152,4 +152,4 @@ def get_all_rooms_by_id(user_id):
     except Exception as err:
         return (0, str(err) , [])
 
-    return (1, 'sucess', list(all_rooms))
+    return (1, 'success', list(all_rooms))

@@ -1,7 +1,9 @@
 from pymongo import MongoClient
 from pymongo import errors
+
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
+
 from datetime import datetime
 import certifi
 import random
