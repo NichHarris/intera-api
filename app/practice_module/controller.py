@@ -1,20 +1,18 @@
-from pymongo import MongoClient
+from config import Database
 from pymongo import errors
 
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 
 from datetime import datetime
-import certifi
 import random
 
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())
 
-client = MongoClient(f"mongodb+srv://{env.get('USERNAME')}:{env.get('PASSWORD')}@asl-cluster.kixgnlo.mongodb.net/?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE", tlsCAFile=certifi.where())
-
 # get a reference to the databases
-intera_practice_db = client.intera_practice_db
+intera_practice_db = Database.client.intera_practice_db
+
 # get a reference to the collections
 try: 
     word_data = intera_practice_db['word_data']

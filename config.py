@@ -1,6 +1,8 @@
 import os
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
+from pymongo import MongoClient
+import certifi
 
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())
@@ -18,3 +20,6 @@ class Config(object):
     MAIL_USERNAME='apikey'
     MAIL_PASSWORD=env.get('SENDGRID_API_KEY')
     MAIL_DEFAULT_SENDER=env.get('MAIL_DEFAULT_SENDER')
+
+class Database(object):
+    client = MongoClient(f"mongodb+srv://{env.get('USERNAME')}:{env.get('PASSWORD')}@{env.get('DATABASE_URL')}", tlsCAFile=certifi.where())
