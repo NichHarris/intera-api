@@ -28,3 +28,4 @@ class Database(object):
     rooms_collection = 'rooms'
     messages_collection = 'messages'
     word_data_collection = 'word_data'
+    attemted_words_collection = 'attemted_words'

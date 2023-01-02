@@ -1,0 +1,264 @@
+{
+	"info": {
+		"_postman_id": "ba814487-18a5-4196-b1f2-6881d37e9246",
+		"name": "Rooms testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create room",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/rooms/create_room_id",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"rooms",
+						"create_room_id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "join_room",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/rooms/join_room?room_id=b17bcd7d&user_id=guest_user2",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"rooms",
+						"join_room"
+					],
+					"query": [
+						{
+							"key": "room_id",
+							"value": "b17bcd7d"
+						},
+						{
+							"key": "user_id",
+							"value": "guest_user2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get room info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/rooms/get_room_info?room_id=2225f9e8",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"rooms",
+						"get_room_info"
+					],
+					"query": [
+						{
+							"key": "room_id",
+							"value": "b17bcd7d",
+							"disabled": true
+						},
+						{
+							"key": "room_id",
+							"value": "2225f9e8"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add messages",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/rooms/add_messages?room_id=2225f9e8&user_id=test_to",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"rooms",
+						"add_messages"
+					],
+					"query": [
+						{
+							"key": "room_id",
+							"value": "2225f9e8"
+						},
+						{
+							"key": "user_id",
+							"value": "test_to"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/api/rooms/register_room?room_id=2225f9e8&host_type=ASL",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/rooms/register_room?room_id=b17bcd7d&host_type=STT",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"rooms",
+						"register_room"
+					],
+					"query": [
+						{
+							"key": "room_id",
+							"value": "b17bcd7d"
+						},
+						{
+							"key": "host_type",
+							"value": "STT"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/api/rooms/email_invite?room_id=2225f9e8&email=harris.nicholas1998@gmail.com",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/rooms/email_invite?room_id=2225f9e8&email=harris.nicholas1998@gmail.com",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"rooms",
+						"email_invite"
+					],
+					"query": [
+						{
+							"key": "room_id",
+							"value": "2225f9e8"
+						},
+						{
+							"key": "email",
+							"value": "harris.nicholas1998@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/api/rooms/get_all_rooms_by_id?user_id=test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/rooms/get_all_rooms_by_id?user_id=test",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"rooms",
+						"get_all_rooms_by_id"
+					],
+					"query": [
+						{
+							"key": "user_id",
+							"value": "test"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/api/rooms/close_room?room_id=2225f9e8",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/rooms/close_room?room_id=2225f9e8",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"rooms",
+						"close_room"
+					],
+					"query": [
+						{
+							"key": "room_id",
+							"value": "2225f9e8"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

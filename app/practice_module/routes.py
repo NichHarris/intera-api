@@ -74,4 +74,3 @@ def update_word_classification():
         return jsonify(error=message, status=401)
     else:
         return jsonify(message=message, status=200)
-

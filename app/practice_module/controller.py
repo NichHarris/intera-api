@@ -76,7 +76,7 @@ def delete_word(word):
 
 # get a reference to the collections
 try:
-    attempted_words = intera_practice_db['attempted_words']
+    attempted_words = intera_practice_db[Database.attemted_words_collection]
 except errors.CollectionInvalid as err:
     print(err)
 
