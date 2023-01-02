@@ -29,9 +29,11 @@ oauth.register(
     },
 )
 
+
 def get_user_info():
     user_info = oauth.auth0.get("userinfo").json()
     return user_info
+
 
 def get_auth_header():
     header = request.headers.get("Authorization", None)
@@ -54,8 +56,9 @@ def get_auth_header():
 @auth.route('/login')
 def login():
     return oauth.auth0.authorize_redirect(
-        redirect_uri=url_for("main.index", _external=True)
+        redirect_uri=url_for("rooms.index", _external=True)
     )
+
 
 @auth.route("/callback", methods=["GET", "POST"])
 # need to check what url the user was accessing from
@@ -74,12 +77,13 @@ def callback():
         + "/v2/logout?"
         + urlencode(
             {
-                "returnTo": url_for("main.index", _external=True),
+                "returnTo": url_for("rooms.index", _external=True),
                 "client_id": Config.AUTH0_CLIENT_ID,
             },
             quote_via=quote_plus,
         )
     )
+
 
 @auth.route("/logout")
 def logout():
@@ -89,7 +93,7 @@ def logout():
         + "/v2/logout?"
         + urlencode(
             {
-                "returnTo": url_for("main.index", _external=True),
+                "returnTo": url_for("rooms.index", _external=True),
                 "client_id": Config.AUTH0_CLIENT_ID,
             },
             quote_via=quote_plus,

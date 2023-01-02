@@ -9,7 +9,7 @@ from config import Config
 
 from flask_cors import CORS
 from flask import render_template, session, redirect, url_for, request, jsonify, Response
-from flask_mail import Mail, Message
+from flask_mail import Message
 
 from auth0.v3.authentication import Users, GetToken
 from authlib.integrations.flask_oauth2 import ResourceProtector
@@ -19,14 +19,17 @@ load_dotenv(find_dotenv())
 mail = app.mail
 CORS(rooms, resources={r"/*": {"origins": "*"}})
 
+
 @rooms.route('/')
 def index():
     if session:
         return render_template('home.html')
     else:
+        return render_template('home.html')
         # redirect to login
         # TODO use next js to fetch
-        return redirect(url_for('auth.login'))
+        # return redirect(url_for('auth.login'))
+
 
 @rooms.get('/create_room_id')
 def create_room_id():
@@ -40,6 +43,7 @@ def create_room_id():
     }
 
     return jsonify(message='success', data=res, status=200)
+
 
 @rooms.post('/email_invite')
 def email_invite():
@@ -59,6 +63,7 @@ def email_invite():
         return jsonify(error='Email not provided', status=401)
 
     return jsonify(message='success', data={'room_id': room_id, 'email_id': 0}, status=200)
+
 
 @rooms.post('/register_room')
 def register_room():
@@ -82,6 +87,7 @@ def register_room():
 
     return jsonify(message=message, data={'room_id': room_id}, status=200)
 
+
 # create route for joining room
 @rooms.get('/join_room')
 def join_room():
@@ -104,6 +110,7 @@ def join_room():
 
     return jsonify(message=message, data={'room_id': room_id}, status=200)
 
+
 @rooms.get('/get_room_info')
 def get_room_info():
     room_id = request.args.get('room_id')
@@ -124,6 +131,7 @@ def get_room_info():
 
     return jsonify(message=message, data=room, status=200)
 
+
 @rooms.get('/get_all_rooms_by_id')
 def get_all_rooms_by_id():
     user_id = request.args.get('user_id')
@@ -138,6 +146,7 @@ def get_all_rooms_by_id():
 
     return jsonify(message=message, data=rooms, status=200)
 
+
 @rooms.put('/close_room')
 def close_room():
     room_id = request.args.get('room_id')
@@ -150,6 +159,7 @@ def close_room():
         return jsonify(error=message, status=401)
 
     return jsonify(message=message, data={'room_id': room_id}, status=200)
+
 
 @rooms.put('/add_messages')
 def add_messages():

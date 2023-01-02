@@ -16,6 +16,7 @@ def create_app():
     app.config.from_object(Config)
     app.secret_key = APP_SECRET_KEY
     CORS(app, resources={r"/api/*": {"origins": "*"}})
+
     mail = Mail(app)
     # Initialize Flask extensions here
 
