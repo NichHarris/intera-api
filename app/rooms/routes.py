@@ -1,5 +1,6 @@
 from app.rooms import rooms
 from app.rooms import controller as rooms_api
+from app.transcripts import controller as transcripts_api
 from app.auth import auth
 import app
 
@@ -20,6 +21,7 @@ mail = app.mail
 CORS(rooms, resources={r"/*": {"origins": "*"}})
 
 
+# TODO Remove this
 @rooms.route('/')
 def index():
     if session:
@@ -164,19 +166,24 @@ def close_room():
 @rooms.put('/add_messages')
 def add_messages():
     room_id = request.args.get('room_id')
-    # messages = request.args.get('messages')
-    messages = []
-    # todo: fetch all messages from the messages table relating to room_id
-    # check if room is valid
+    user_id = request.form.get('user_id')
+
+    # check if room is active 
     status, message = rooms_api.validate_room(room_id)
+
+    # if status == 0:
+    #     # error occured
+    #     return jsonify(error=message, status=401)
+
+    status, message, transcript = transcripts_api.get_all_messages_by_room(room_id, user_id)
 
     if status == 0:
         # error occured
         return jsonify(error=message, status=401)
 
-    # update room status
-    status, message = rooms_api.add_room_messages(room_id, messages)
-    
+    # update messages array
+    status, message = rooms_api.add_room_messages(room_id, transcript)
+
     if status == 0:
         # error occured
         return jsonify(error=message, status=401)

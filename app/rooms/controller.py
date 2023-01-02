@@ -11,13 +11,14 @@ import certifi
 load_dotenv(find_dotenv())
 
 # get a reference to the databases
-intera_calls_db = Database.client.intera_calls
+intera_calls_db = Database.client[Database.intera_calls_db]
 
 # get a reference to the collections
 try: 
-    rooms = intera_calls_db['rooms']
+    rooms = intera_calls_db[Database.rooms_collection]
 except errors.CollectionInvalid as err:
     print(err)
+
 
 # generate a random room_id using the uuid library
 def generate_room_id():
@@ -28,6 +29,7 @@ def generate_room_id():
         random_id = str(uuid.uuid4())[:8]
 
     return random_id
+
 
 def create_room(room_id, user_id, host_type):
     room = {'room_id': room_id, 'users': [user_id], 'host_type': host_type, 'date_created': datetime.now(), 'active': True, 'messages': []}
@@ -64,6 +66,7 @@ def validate_room(room_id, user_id):
     
     return (1, 'Room is valid')
 
+
 def register_user_in_room(room_id, user_id):
     try:
         room = rooms.find_one({'room_id': room_id})
@@ -90,6 +93,7 @@ def register_user_in_room(room_id, user_id):
         
     return (1, 'User successfully registered in room')
 
+
 def get_room(room_id):
     try:
         room = rooms.find_one({'room_id': room_id})
@@ -100,6 +104,7 @@ def get_room(room_id):
         return (0, 'Room does not exist', None)
     
     return (1, 'success', room)
+
 
 def update_room_status(room_id, status):
     try:
@@ -119,21 +124,22 @@ def update_room_status(room_id, status):
 
     return (1, 'Room status successfully updated')        
 
+
 def get_room_users(room_id):
     pass
 
-def add_room_messages(room_id, message):
+
+def add_room_messages(room_id, messages):
     try:
-        room = rooms.find_one_and_update({'room_id': room_id}, {'$push': {'messages': message}})
+        room = rooms.find_one_and_update({'room_id': room_id}, {'$push': {'messages': messages}})
     except errors.PyMongoError as err:
-        return (0, err._message, None)
+        return (0, err._message)
     
     if room is None:
-        return (0, 'Room does not exist', None)
+        return (0, 'Room does not exist')
 
-    room_messages = room['messages']
+    return (1, 'success')
 
-    room_messages.append(message)
 
 def get_all_rooms():
     try:
@@ -146,6 +152,7 @@ def get_all_rooms():
         return (0, str(err), None)
     
     return (1, 'success', list(all_rooms))
+
 
 def get_all_rooms_by_id(user_id):
     try:
