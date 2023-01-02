@@ -14,20 +14,28 @@ except errors.CollectionInvalid as err:
 
 def create_word_entry(word, url, classified=True):
     word_entry = {'word': word, 'url': url, 'classified': classified}
-    result = word_data.insert_one(word_entry)
+
+    try:
+        count = word_data.count_documents({'word': word})
+        if count != 0:
+            return (0, f'Word {word} already exists')
+
+        result = word_data.insert_one(word_entry)
+    except errors.DuplicateKeyError:
+        return (0, f'Word {word} already exists')
 
     if isinstance(result, results.InsertOneResult):
         if result.inserted_id:
-            return (1, 'Word {word} created successfully')
+            return (1, f'Word {word} created successfully')
 
-    return (0, 'Error creating word {word}')
+    return (0, f'Error creating word {word}')
 
 
-def retrieve_random_word(self):
+def retrieve_random_word():
     # get random word from mongodb without using aggregate
     count = word_data.count_documents({'classified': True})
     random_index = random.randint(0, count - 1)
-    word = word_data.find({'classified': True})[random_index]
+    word = word_data.find({'classified': True}, {'_id': 0})[random_index]
 
     if word is None:
         return (0, 'No classified words found', None)
@@ -49,11 +57,11 @@ def set_classified_status(word, classified):
 
     if isinstance(result, results.UpdateResult):
         if result.matched_count == 1:
-            return (1, 'Word {word} updated successfully')
+            return (1, f'Word {word} updated successfully')
         else:
-            return (0, 'Word {word} not found')
+            return (0, f'Word {word} not found')
     
-    return (0, 'Error updating word {word}')
+    return (0, f'Error updating word {word}')
 
 
 def delete_word(word):
@@ -61,9 +69,9 @@ def delete_word(word):
 
     if isinstance(result, results.DeleteResult):
         if result.deleted_count == 1:
-            return (1, 'Word {word} deleted successfully')
+            return (1, f'Word {word} deleted successfully')
 
-    return (0, 'Word {word} not found')
+    return (0, f'Word {word} not found')
 
 
 # get a reference to the collections
@@ -78,9 +86,9 @@ def create_attempted_word_entry(word, user_id, classification, correct):
     result = attempted_words.find_one_and_replace(filter={ '$and': {'word': word, 'user_id': user_id}}, replacement=word_entry, upsert=True)
 
     if result is not None:
-        return (1, 'Word attempt {word} created successfully')
+        return (1, f'Word attempt {word} created successfully')
 
-    return (0, 'Error creating word attempt {word}')
+    return (0, f'Error creating word attempt {word}')
 
 
 def get_attempted_words(user_id):
@@ -106,6 +114,6 @@ def delete_attempted_word(word, user_id):
 
     if isinstance(result, results.DeleteResult):
         if result.deleted_count == 1:
-            return (1, 'Word attempt {word} deleted successfully')
+            return (1, f'Word attempt {word} deleted successfully')
     
-    return (0, 'Word attempt {word} not found')
+    return (0, f'Word attempt {word} not found')

@@ -91,13 +91,14 @@ def register_room():
 
 
 # create route for joining room
-@rooms.get('/join_room')
+@rooms.put('/join_room')
 def join_room():
     room_id = request.args.get('room_id')
-    user_id = request.form.get('user_id')
+    # user_id = request.form.get('user_id')
+    user_id = request.args.get('user_id')
 
     # check if room is valid
-    status, message = rooms_api.validate_room(room_id)
+    status, message = rooms_api.validate_room(room_id, user_id)
 
     if status == 0:
         # error occured
@@ -117,12 +118,12 @@ def join_room():
 def get_room_info():
     room_id = request.args.get('room_id')
 
-    # check if room is valid
-    status, message = rooms_api.validate_room(room_id)
+    # # check if room is valid
+    # status, message = rooms_api.validate_room(room_id)
 
-    if status == 0:
-        # error occured
-        return jsonify(error=message, status=401)
+    # if status == 0:
+    #     # error occured
+    #     return jsonify(error=message, status=401)
 
     # get room
     status, message, room = rooms_api.get_room(room_id)
@@ -166,16 +167,22 @@ def close_room():
 @rooms.put('/add_messages')
 def add_messages():
     room_id = request.args.get('room_id')
-    user_id = request.form.get('user_id')
 
     # check if room is active 
-    status, message = rooms_api.validate_room(room_id)
+    # status, message = rooms_api.validate_room(room_id)
 
     # if status == 0:
     #     # error occured
     #     return jsonify(error=message, status=401)
 
-    status, message, transcript = transcripts_api.get_all_messages_by_room(room_id, user_id)
+    status, message, room = rooms_api.get_room(room_id)
+
+    if status == 0:
+        # error occured
+        return jsonify(error=message, status=401)
+
+    users_list = room['users']
+    status, message, transcript = transcripts_api.get_all_messages_by_room(room_id, users_list[0])
 
     if status == 0:
         # error occured

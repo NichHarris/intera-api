@@ -39,7 +39,7 @@ def create_word():
         return jsonify(message=message, status=200)
 
 
-@practice_module.put('/get_word_url')
+@practice_module.get('/get_word_url')
 def get_word_url():
     word = request.args.get('word')
 
@@ -51,7 +51,7 @@ def get_word_url():
         return jsonify(message=message, data=url, status=200)
 
 
-@practice_module.put('/delete_word')
+@practice_module.delete('/delete_word')
 def delete_word():
     word = request.args.get('word')
 

@@ -96,7 +96,7 @@ def register_user_in_room(room_id, user_id):
 
 def get_room(room_id):
     try:
-        room = rooms.find_one({'room_id': room_id})
+        room = rooms.find_one({'room_id': room_id}, {'_id': 0})
     except errors.PyMongoError as err:
         return (0, err._message, None)
     

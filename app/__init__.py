@@ -25,6 +25,9 @@ def create_app():
         from app.rooms import rooms
         app.register_blueprint(rooms, url_prefix='/api/rooms')
 
+        from app.transcripts import transcripts
+        app.register_blueprint(transcripts, url_prefix='/api/transcripts')
+        
         from app.auth import auth
         app.register_blueprint(auth, url_prefix='/api/auth')
 

@@ -25,8 +25,12 @@ def create_message():
     to_user = request.args.get('to_user')
     text = request.args.get('message')
 
-    from_user = request.form.get('user_id')
-    type = request.form.get('type')
+    from_user = request.args.get('user_id')
+    type = request.args.get('type')
+    # from_user = request.form.get('user_id')
+    # type = request.form.get('type')
+
+    # todo validate room id
 
     status, message = transcripts_api.create_message_entry(room_id, to_user, from_user, text, message_type=type)
 
@@ -40,7 +44,8 @@ def create_message():
 def edit_message():
     room_id = request.args.get('room_id')
     text = request.args.get('message')
-    user_id = request.form.get('user_id')
+    # user_id = request.form.get('user_id')
+    user_id = request.args.get('user_id')
 
     status, message = transcripts_api.edit_message_entry(room_id, user_id, text)
 
@@ -50,14 +55,32 @@ def edit_message():
         return jsonify(message=message, status=200)
 
 
-@transcripts.put('/get_message')
+@transcripts.get('/get_message')
 def get_message():
     room_id = request.args.get('room_id')
-    user_id = request.form.get('user_id')
+    # user_id = request.form.get('user_id')
+    user_id = request.args.get('user_id')
 
     status, message, data = transcripts_api.get_message(room_id, user_id)
 
     if status == 0:
         return jsonify(error=message, status=401)
-    else:
-        return jsonify(message=message, data=data, status=200)
+
+    return jsonify(message=message, data=data, status=200)
+
+
+@transcripts.get('/get_messages')
+def get_messages():
+    room_id = request.args.get('room_id')
+    # user_id = request.form.get('user_id')
+    user_id = request.args.get('user_id')
+
+    status, message, data = transcripts_api.get_all_messages_by_room(room_id, user_id)
+
+    if status == 0:
+        return jsonify(error=message, status=401)
+
+    print(data)
+    return jsonify(message=message, data=data, status=200)
+
+# TODO Add route for setting if message is correct or not

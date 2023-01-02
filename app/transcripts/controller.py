@@ -18,7 +18,7 @@ except errors.CollectionInvalid as err:
     print(err)
 
 
-def create_message_entry(room_id, to_user, from_user, text, edited=False, message_type='ASL', correct=False):
+def create_message_entry(room_id, to_user, from_user, text, edited=False, message_type='ASL', correct=True):
     message = {'date_created': datetime.now(), 'room_id': room_id, 'to': to_user, 'from': from_user, 'text': text,\
         'edited': edited, 'message_type': message_type, 'correct': correct}
 
@@ -52,18 +52,22 @@ def edit_message_entry(room_id, user_id, new_text):
 
 
 def get_all_messages_by_room(room_id, user_id):
-    all_transcripts = messages.find({ '$and': [{'room_id': room_id}, 
-        {'$or': [{'guest_id': user_id}, {'host_id': user_id}]}]
-    }).sort('date_created', -1)
+    message_count = messages.count_documents({ '$and': [{'room_id': room_id}, 
+        {'$or': [{'to': user_id}, {'from': user_id}]}]
+    })
 
-    if all_transcripts.count() == 0:
-        return (0, 'No messages found', None)
+    if message_count == 0:
+        return (0, 'No messages found', [])
+
+    all_transcripts = messages.find({ '$and': [{'room_id': room_id}, 
+        {'$or': [{'to': user_id}, {'from': user_id}]}]
+    }, {'_id': 0}).sort('date_created', -1)
 
     return (1, 'success', list(all_transcripts))
 
 
 def get_message(room_id, user_id):
-    result = messages.find({'room_id': room_id, 'from': user_id}).sort('date_created', -1).limit(1)
+    result = messages.find({'room_id': room_id, 'from': user_id}, {'_id': 0}).sort('date_created', -1).limit(1)
 
     for message in result:
         if message is None:
