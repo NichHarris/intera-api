@@ -1,5 +1,7 @@
 import uuid
-from db import DB
+import app.rooms.controller as rooms_api
+import app.practice_module.controller as practice_api
+import app.transcripts.controller as transcripts_api
 import random
 
 n = 5
@@ -29,6 +31,7 @@ words = {
             "water": "https://www.youtube.com/watch?v=-SdOfxGhb0A"
         }
 
+# TODO Update, should just call the actual api roots to do this, that way we can test them simulatenously
 def populate_rooms(db):
     for _ in range(n):
         host_id = random.choice(host_user_ids)        
@@ -48,6 +51,7 @@ def populate_rooms(db):
         else:
             print(f'Room not created') 
 
+# TODO Update, should just call the actual api roots to do this, that way we can test them simulatenously
 def populate_msgs(db):
     rooms = db.room # needs to be changed to a method that gets all the rooms
     for room_id in rooms:
@@ -60,15 +64,15 @@ def populate_msgs(db):
             
             db.create_transcript_entry(room_id, guest_id, host_id, message)
 
+# TODO Update, should just call the actual api roots to do this, that way we can test them simulatenously
 def populate_words(db):
     for word, url in words.items():
         db.create_word_entry(word, url)
                              
 if __name__ == "__main__":
-    db = DB()
+
+    populate_rooms(rooms_api)
     
-    populate_rooms(db)
+    populate_msgs(transcripts_api)
     
-    populate_msgs(db)
-    
-    populate_words(db)
+    populate_words(practice_api)

@@ -23,3 +23,8 @@ class Config(object):
 
 class Database(object):
     client = MongoClient(f"mongodb+srv://{env.get('USERNAME')}:{env.get('PASSWORD')}@{env.get('DATABASE_URL')}", tlsCAFile=certifi.where())
+    intera_calls_db = 'intera_calls'
+    intera_practice_db = 'intera_practice_db'
+    rooms_collection = 'rooms'
+    messages_collection = 'messages'
+    word_data_collection = 'word_data'

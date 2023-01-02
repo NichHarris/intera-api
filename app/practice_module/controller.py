@@ -4,11 +4,11 @@ import random
 from datetime import datetime
 
 # get a reference to the databases
-intera_practice_db = Database.client.intera_practice_db
+intera_practice_db = Database.client[Database.intera_practice_db]
 
 # get a reference to the collections
 try: 
-    word_data = intera_practice_db['word_data']
+    word_data = intera_practice_db[Database.word_data_collection]
 except errors.CollectionInvalid as err:
     print(err)
 
@@ -67,7 +67,7 @@ def delete_word(word):
 
 
 # get a reference to the collections
-try: 
+try:
     attempted_words = intera_practice_db['attempted_words']
 except errors.CollectionInvalid as err:
     print(err)
