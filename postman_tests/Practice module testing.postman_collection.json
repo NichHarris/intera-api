@@ -1,0 +1,161 @@
+{
+	"info": {
+		"_postman_id": "150ba52b-0b7d-4b7d-904a-33f9ed4f197a",
+		"name": "Practice module testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get_word",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/practice/get_word",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"practice",
+						"get_word"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add word",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/practice/create_word?word=test_word_class&url=https://test_classified.test",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"practice",
+						"create_word"
+					],
+					"query": [
+						{
+							"key": "word",
+							"value": "test_word_class"
+						},
+						{
+							"key": "url",
+							"value": "https://test_classified.test"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_word_video_url",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/practice/get_word_url?word=test",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"practice",
+						"get_word_url"
+					],
+					"query": [
+						{
+							"key": "word",
+							"value": "test"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete_word",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/practice/delete_word?word=test",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"practice",
+						"delete_word"
+					],
+					"query": [
+						{
+							"key": "word",
+							"value": "test"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "change classification",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/practice/update_word_classification?word=test&classification=False",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"practice",
+						"update_word_classification"
+					],
+					"query": [
+						{
+							"key": "word",
+							"value": "test"
+						},
+						{
+							"key": "classification",
+							"value": "False"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
