@@ -37,7 +37,7 @@ SIGNER = "ASL"
 def populate_rooms(controller):
     host_type = SIGNER
     user_type = SPEAKER
-        
+
     for _ in range(n):
         host_id = random.choice(host_user_ids)
         guest_id = random.choice(guest_user_ids)
@@ -45,9 +45,9 @@ def populate_rooms(controller):
         room_id = controller.generate_room_id()
 
         print(f'Room ID: {room_id}')
-        
+
         result, message = controller.create_room(room_id, host_id, host_type)
-        
+
         if result == 1:
             registered, message = controller.register_user_in_room(room_id, guest_id)
 
@@ -55,7 +55,7 @@ def populate_rooms(controller):
 
         else:
             print(f'RoomID {room_id}: {message}')
-            
+
         # switch the user types so that we get good dummy data
         temp_host_type = host_type
         host_type = user_type
@@ -63,28 +63,28 @@ def populate_rooms(controller):
 
 def populate_msgs(controller_room, controller_trans):
     result, data = controller_room.get_all_rooms()
-    
+
     if result == 1:
         for room in data:
             room_id = data["room_id"]
             
             host_type = data["host_type"]
             guest_type = SPEAKER if host_type == SIGNER else SIGNER
-            
+
             host_info = {data["users"][0], host_type}
             guest_info = {data["users"][1], guest_type}
 
             from_user_info = host_info
             to_user_info =  guest_info
-                        
-            
+
+
             for _ in range(n):
                 message = random.choice(messages)
-                
-                from_id = from_user_info[0] 
+
+                from_id = from_user_info[0]
                 to_id = to_user_info[0]
                 message_type = from_user_info[1]
-                
+
                 print(f'Room ID: {room_id}')
 
                 controller_trans.create_message_entry(room_id, from_id, to_id, message, False, message_type, True)
@@ -103,7 +103,7 @@ def populate_words(controller):
         result, message = controller.create_word_entry(word, url)
 
         print(message)
-        
+
 if __name__ == "__main__":
 
     populate_rooms(rooms_api)

@@ -1,5 +1,7 @@
 auth0-python==3.24.0
 Authlib==1.2.0
+bcrypt==4.0.1
+blinker==1.5
 certifi==2022.12.7
 cffi==1.15.1
 charset-normalizer==2.1.1
@@ -8,6 +10,8 @@ cryptography==38.0.4
 dnspython==2.2.1
 Flask==2.2.2
 Flask-Cors==3.0.10
+Flask-Mail==0.9.1
+gunicorn==20.1.0
 idna==3.4
 importlib-metadata==5.2.0
 itsdangerous==2.1.2

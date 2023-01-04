@@ -1,0 +1,161 @@
+{
+	"info": {
+		"_postman_id": "2f4078a9-9bf8-4d2c-9e53-bed6d7285ff5",
+		"name": "Transcript/message testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://127.0.0.1:5000/api/transcripts/create_message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/transcripts/create_message?room_id=2225f9e8&to_user=test_to&message=This is a test comment&user_id=test_from&type=ASL",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"transcripts",
+						"create_message"
+					],
+					"query": [
+						{
+							"key": "room_id",
+							"value": "2225f9e8"
+						},
+						{
+							"key": "to_user",
+							"value": "test_to"
+						},
+						{
+							"key": "message",
+							"value": "This is a test comment"
+						},
+						{
+							"key": "user_id",
+							"value": "test_from"
+						},
+						{
+							"key": "type",
+							"value": "ASL"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/api/transcripts/get_messages",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/transcripts/get_messages?room_id=2225f9e8&user_id=test_from",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"transcripts",
+						"get_messages"
+					],
+					"query": [
+						{
+							"key": "room_id",
+							"value": "2225f9e8"
+						},
+						{
+							"key": "user_id",
+							"value": "test_from"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/api/transcripts/get_message",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/transcripts/get_message?room_id=2225f9e8&user_id=test_from",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"transcripts",
+						"get_message"
+					],
+					"query": [
+						{
+							"key": "room_id",
+							"value": "2225f9e8"
+						},
+						{
+							"key": "user_id",
+							"value": "test_from"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/api/transcripts/edit_message",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/transcripts/edit_message?room_id=2225f9e8&user_id=test_from&message=This is an edited comment",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"transcripts",
+						"edit_message"
+					],
+					"query": [
+						{
+							"key": "room_id",
+							"value": "2225f9e8"
+						},
+						{
+							"key": "user_id",
+							"value": "test_from"
+						},
+						{
+							"key": "message",
+							"value": "This is an edited comment"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
