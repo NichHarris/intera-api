@@ -1,5 +1,7 @@
 import uuid
-from db import DB
+import app.rooms.controller as rooms_api
+import app.practice_module.controller as practice_api
+import app.transcripts.controller as transcripts_api
 import random
 
 n = 5
@@ -22,53 +24,90 @@ messages = [
             ]
 
 words = {
-            "hello": "https://www.youtube.com/watch?v=uKKvNqA9N20", 
-            "bye": "https://www.youtube.com/watch?v=4rOC5fNt-_k", 
-            "please": "https://www.youtube.com/watch?v=wtNN6H27L3k", 
-            "thank you": "https://www.youtube.com/watch?v=IvRwNLNR4_w", 
+            "hello": "https://www.youtube.com/watch?v=uKKvNqA9N20",
+            "bye": "https://www.youtube.com/watch?v=4rOC5fNt-_k",
+            "please": "https://www.youtube.com/watch?v=wtNN6H27L3k",
+            "thank you": "https://www.youtube.com/watch?v=IvRwNLNR4_w",
             "water": "https://www.youtube.com/watch?v=-SdOfxGhb0A"
         }
 
-def populate_rooms(db):
+SPEAKER = "STT"
+SIGNER = "ASL"
+
+def populate_rooms(controller):
+    host_type = SIGNER
+    user_type = SPEAKER
+        
     for _ in range(n):
-        host_id = random.choice(host_user_ids)        
-        guest_id = random.choice(guest_user_ids)  
-        
-        room_id = db.create_room(host_id)
-        
+        host_id = random.choice(host_user_ids)
+        guest_id = random.choice(guest_user_ids)
+
+        room_id = controller.generate_room_id()
+
         print(f'Room ID: {room_id}')
         
-        if room_id is not None:
-            registered = db.register_user_in_room(room_id, guest_id)
-            
-            if registered: 
-                print(f'GuestID {guest_id} successfully registered')
-            else:
-                print(f'GuestID {guest_id} not successfully registered')
+        result, message = controller.create_room(room_id, host_id, host_type)
+        
+        if result == 1:
+            registered, message = controller.register_user_in_room(room_id, guest_id)
+
+            print(f'RoomID: {room_id} GuestID: {guest_id}: {message}')
+
         else:
-            print(f'Room not created') 
-
-def populate_msgs(db):
-    rooms = db.room # needs to be changed to a method that gets all the rooms
-    for room_id in rooms:
-        for _ in range(n):
-            host_id = random.choice(host_user_ids)        
-            guest_id = random.choice(guest_user_ids)  
-            message = random.choice(messages) 
+            print(f'RoomID {room_id}: {message}')
             
-            print(f'Room ID: {room_id}')
-            
-            db.create_transcript_entry(room_id, guest_id, host_id, message)
+        # switch the user types so that we get good dummy data
+        temp_host_type = host_type
+        host_type = user_type
+        user_type = temp_host_type
 
-def populate_words(db):
+def populate_msgs(controller_room, controller_trans):
+    result, data = controller_room.get_all_rooms()
+    
+    if result == 1:
+        for room in data:
+            room_id = data["room_id"]
+            
+            host_type = data["host_type"]
+            guest_type = SPEAKER if host_type == SIGNER else SIGNER
+            
+            host_info = {data["users"][0], host_type}
+            guest_info = {data["users"][1], guest_type}
+
+            from_user_info = host_info
+            to_user_info =  guest_info
+                        
+            
+            for _ in range(n):
+                message = random.choice(messages)
+                
+                from_id = from_user_info[0] 
+                to_id = to_user_info[0]
+                message_type = from_user_info[1]
+                
+                print(f'Room ID: {room_id}')
+
+                controller_trans.create_message_entry(room_id, from_id, to_id, message, False, message_type, True)
+
+                # switch the from and to user info so that we get good dummy data
+                # essentially for every iteration of the inner for loop we change
+                # who is receiving and sending the message
+                temp_from_user_info = from_user_info
+                from_user_info = to_user_info
+                to_user_info = temp_from_user_info
+    else:
+        print(f'Getting all rooms failed: {data}')
+
+def populate_words(controller):
     for word, url in words.items():
-        db.create_word_entry(word, url)
-                             
+        result, message = controller.create_word_entry(word, url)
+
+        print(message)
+        
 if __name__ == "__main__":
-    db = DB()
-    
-    populate_rooms(db)
-    
-    populate_msgs(db)
-    
-    populate_words(db)
+
+    populate_rooms(rooms_api)
+
+    # populate_msgs(rooms_api, transcripts_api)
+
+    # populate_words(practice_api)
