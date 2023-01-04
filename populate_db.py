@@ -44,12 +44,12 @@ def populate_rooms(controller):
 
         room_id = controller.generate_room_id()
 
-        print(f'Room ID: {room_id}')
+        #print(f'Room ID: {room_id}')
 
         result, message = controller.create_room(room_id, host_id, host_type)
 
         if result == 1:
-            registered, message = controller.register_user_in_room(room_id, guest_id)
+            result, message = controller.register_user_in_room(room_id, guest_id)
 
             print(f'RoomID: {room_id} GuestID: {guest_id}: {message}')
 
@@ -62,41 +62,46 @@ def populate_rooms(controller):
         user_type = temp_host_type
 
 def populate_msgs(controller_room, controller_trans):
-    result, data = controller_room.get_all_rooms()
+    result, message, data = controller_room.get_all_rooms()
 
     if result == 1:
         for room in data:
-            room_id = data["room_id"]
+            room_id = room["room_id"]
             
-            host_type = data["host_type"]
+            host_type = room["host_type"]
             guest_type = SPEAKER if host_type == SIGNER else SIGNER
+            
+            room_length = len(room["users"])
+            
+            if room_length == 2:
+                host_info = [room["users"][0], host_type]
+                guest_info = [room["users"][1], guest_type]
 
-            host_info = {data["users"][0], host_type}
-            guest_info = {data["users"][1], guest_type}
+                from_user_info = host_info
+                to_user_info =  guest_info
 
-            from_user_info = host_info
-            to_user_info =  guest_info
+                for _ in range(n):
+                    message_to_send = random.choice(messages)
 
+                    from_id = from_user_info[0]
+                    to_id = to_user_info[0]
+                    message_type = from_user_info[1]
 
-            for _ in range(n):
-                message = random.choice(messages)
+                    #print(f'Room ID: {room_id}')
 
-                from_id = from_user_info[0]
-                to_id = to_user_info[0]
-                message_type = from_user_info[1]
+                    result, message = controller_trans.create_message_entry(room_id, from_id, to_id, message_to_send, False, message_type, True)
 
-                print(f'Room ID: {room_id}')
-
-                controller_trans.create_message_entry(room_id, from_id, to_id, message, False, message_type, True)
-
-                # switch the from and to user info so that we get good dummy data
-                # essentially for every iteration of the inner for loop we change
-                # who is receiving and sending the message
-                temp_from_user_info = from_user_info
-                from_user_info = to_user_info
-                to_user_info = temp_from_user_info
+                    print(f'RoomID: {room_id}: {message}')
+                    # switch the from and to user info so that we get good dummy data
+                    # essentially for every iteration of the inner for loop we change
+                    # who is receiving and sending the message
+                    temp_from_user_info = from_user_info
+                    from_user_info = to_user_info
+                    to_user_info = temp_from_user_info
+            else:
+                print(f"Room {room_id} is a test room with {room_length} users.")
     else:
-        print(f'Getting all rooms failed: {data}')
+        print(f'Getting all rooms failed: {message}')
 
 def populate_words(controller):
     for word, url in words.items():
@@ -105,9 +110,10 @@ def populate_words(controller):
         print(message)
 
 if __name__ == "__main__":
-
-    populate_rooms(rooms_api)
+    # comment out the method u want to run or run all 3 if you want to
+    
+    # populate_rooms(rooms_api)
 
     # populate_msgs(rooms_api, transcripts_api)
 
-    # populate_words(practice_api)
+    populate_words(practice_api)
