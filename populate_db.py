@@ -57,8 +57,9 @@ def populate_rooms(controller):
             print(f'RoomID {room_id}: {message}')
 
         # switch the user types so that we get good dummy data
-        temp_host_type = host_type
-        host_type = user_type
+        # temp_host_type = host_type
+        # host_type = user_type
+        # host_type, user_type = user_type, host_type
         host_type, user_type = user_type, host_type
 
 def populate_msgs(controller_room, controller_trans):
