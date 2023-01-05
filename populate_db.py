@@ -95,9 +95,7 @@ def populate_msgs(controller_room, controller_trans):
                     # switch the from and to user info so that we get good dummy data
                     # essentially for every iteration of the inner for loop we change
                     # who is receiving and sending the message
-                    temp_from_user_info = from_user_info
-                    from_user_info = to_user_info
-                    to_user_info = temp_from_user_info
+                    from_user_info, to_user_info = to_user_info, from_user_info
             else:
                 print(f"Room {room_id} is a test room with {room_length} users.")
     else:
