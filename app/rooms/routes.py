@@ -10,14 +10,18 @@ from config import Config
 
 from flask_cors import CORS
 from flask import render_template, session, redirect, url_for, request, jsonify, Response
-from flask_mail import Message
 
 from auth0.v3.authentication import Users, GetToken
 from authlib.integrations.flask_oauth2 import ResourceProtector
 
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import *
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())
-mail = app.mail
 CORS(rooms, resources={r"/*": {"origins": "*"}})
 
 
@@ -54,13 +58,22 @@ def email_invite():
     # user_id = request.form.get('user_id')
     user_id = 'test'
 
-    # message = sendgrid.Mail()
     msg = None
     if email:
-        msg = Message('Twilio SendGrid Test Email', recipients=['harris.nicholas1998@gmail.com'], sender='harris.nicholas1998@gmail.com')
-        msg.body = 'This is a test email!'
-        msg.html = '<p>This is a test email!</p>'
-        mail.send(msg)
+        
+        invite_link = f'{Config.BASE_URL}/api/rooms/join_room?room_id={room_id}'
+        message = Mail(from_email=From('harris.nicholas1998@gmail.com', 'Example From Name'),
+            to_emails=To('harris.nicholas1998@gmail.com', 'Example To Name'),
+            subject=Subject('Sending with SendGrid is Fun'),
+            plain_text_content=PlainTextContent(f'Invite link: {invite_link}'),
+            html_content=HtmlContent(f'<strong>and easy to do anywhere, even {invite_link}</strong>'))
+
+        sendgrid_api = SendGridAPIClient(env.get('SENDGRID_API_KEY'))
+        response = sendgrid_api.send(message)
+
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
     else:
         return jsonify(error='Email not provided', status=401)
 

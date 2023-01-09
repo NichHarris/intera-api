@@ -3,11 +3,9 @@ from dotenv import find_dotenv, load_dotenv
 from flask import Flask
 from config import Config
 from flask_cors import CORS
-from flask_mail import Mail
 
 # load .env file
 load_dotenv(find_dotenv())
-mail = Mail()
 
 # get APP_SECRET_KEY from .env file
 APP_SECRET_KEY = env.get("APP_SECRET_KEY")
@@ -17,7 +15,6 @@ def create_app():
     app.secret_key = APP_SECRET_KEY
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-    mail = Mail(app)
     # Initialize Flask extensions here
 
     # Register blueprints here
