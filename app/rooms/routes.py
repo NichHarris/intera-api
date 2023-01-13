@@ -32,10 +32,10 @@ CORS(rooms, resources={r"/*": {"origins": "*"}})
 @auth.requires_auth
 def create_room_id():
     room_id = rooms_api.generate_room_id()
-    token = request.headers.get('Authorization').split(' ')[1]
-
-
+    token = auth.get_auth_token(request)
     user_info = auth.decode_jwt(token)
+    print(user_info)
+
     invite_link = f'{Config.BASE_URL}/api/rooms/join_room?room_id={room_id}'
 
     res = {
@@ -47,19 +47,22 @@ def create_room_id():
 
 
 @rooms.post('/email_invite')
+@auth.requires_auth
 def email_invite():
     room_id = request.args.get('room_id')
-    email = request.args.get('email')
-    # user_id = request.form.get('user_id')
-    user_id = 'test'
+    to_email = request.args.get('email')
+    
+    token = auth.get_auth_token(request)
+    user_info = auth.decode_jwt(token)
 
-    msg = None
+    from_email = user_info['email']
+
     if email:
 
         # TODO: Format
         invite_link = f'{Config.BASE_URL}/api/rooms/join_room?room_id={room_id}'
-        message = Mail(from_email=From('harris.nicholas1998@gmail.com', 'Example From Name'),
-            to_emails=To('harris.nicholas1998@gmail.com', 'Example To Name'),
+        message = Mail(from_email=From(from_email, 'Example From Name'),
+            to_emails=To(to_email, 'Example To Name'),
             subject=Subject('Sending with SendGrid is Fun'),
             plain_text_content=PlainTextContent(f'Invite link: {invite_link}'),
             html_content=HtmlContent(f'<strong>and easy to do anywhere, even {invite_link}</strong>'))
@@ -77,11 +80,12 @@ def email_invite():
 
 
 @rooms.post('/register_room')
+@auth.requires_auth
 def register_room():
     room_id = request.args.get('room_id')
-    # user_id = request.form.get('user_id')
-    user_id = 'test'
     host_type = request.args.get('host_type')
+    user_info = auth.decode_jwt(auth.get_auth_token(request))
+    user_id = user_info['nickname']
 
     # validate room doesn't exist
     status, message = rooms_api.validate_room(room_id, user_id)
@@ -103,8 +107,8 @@ def register_room():
 @rooms.put('/join_room')
 def join_room():
     room_id = request.args.get('room_id')
-    # user_id = request.form.get('user_id')
-    user_id = request.args.get('user_id')
+    user_info = auth.decode_jwt(auth.get_auth_token(request))
+    user_id = user_info['nickname']
 
     # check if room is valid
     status, message = rooms_api.validate_room(room_id, user_id)
@@ -124,6 +128,7 @@ def join_room():
 
 
 @rooms.get('/get_room_info')
+@auth.requires_auth
 def get_room_info():
     room_id = request.args.get('room_id')
 
@@ -144,13 +149,19 @@ def get_room_info():
     return jsonify(message=message, data=room, status=200)
 
 
-@rooms.get('/get_all_rooms_by_id')
-def get_all_rooms_by_id():
+@rooms.get('/get_all_rooms_by_user')
+@auth.requires_auth
+def get_all_rooms_by_user():
     user_id = request.args.get('user_id')
-    # user_id = 'test'
+    
+    user_info = auth.decode_jwt(auth.get_auth_token(request))
+    user_nickname = user_info['nickname']
+
+    if user_id != user_nickname:
+        return jsonify(error='Unauthorized', status=401)
 
     # get all rooms
-    status, message, rooms = rooms_api.get_all_rooms_by_id(user_id)
+    status, message, rooms = rooms_api.get_all_rooms_by_user(user_id)
     
     if status == 0:
         # error occured
@@ -160,6 +171,7 @@ def get_all_rooms_by_id():
 
 
 @rooms.put('/close_room')
+@auth.requires_auth
 def close_room():
     room_id = request.args.get('room_id')
 
@@ -174,6 +186,7 @@ def close_room():
 
 
 @rooms.put('/add_messages')
+@auth.requires_auth
 def add_messages():
     room_id = request.args.get('room_id')
 

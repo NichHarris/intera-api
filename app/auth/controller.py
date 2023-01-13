@@ -2,37 +2,38 @@ from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from functools import wraps
 from six.moves.urllib.request import urlopen
+from flask import _request_ctx_stack, request
+from jose import jwt
 import json
 
-from typing import Dict
-
-from flask import Flask, request, jsonify, _request_ctx_stack, Response
-from flask_cors import cross_origin
-from jose import jwt
-
-from flask import Flask, redirect, render_template, session, url_for, request, jsonify
-
 load_dotenv(find_dotenv())
-AUTH0_CLIENT_SECRET = env.get("AUTH0_CLIENT_SECRET")
+AUTH0_CLIENT_SECRET = env.get('AUTH0_CLIENT_SECRET')
+
+def get_auth_token(request):
+    auth = request.headers.get('Authorization', None)
+    token = auth.split(' ')[1] if auth else None
+
+    return token
 
 def get_rsa_key(token, jwks):
     unverified_header = jwt.get_unverified_header(token)
     rsa_key = {}
     
-    for key in jwks["keys"]:
-        if key["kid"] == unverified_header["kid"]:
+    for key in jwks['keys']:
+        if key['kid'] == unverified_header['kid']:
             rsa_key = {
-                "kty": key["kty"],
-                "kid": key["kid"],
-                "use": key["use"],
-                "n": key["n"],
-                "e": key["e"]
+                'kty': key['kty'],
+                'kid': key['kid'],
+                'use': key['use'],
+                'n': key['n'],
+                'e': key['e']
             }
 
     return rsa_key
 
 def decode_jwt(token):
-    jsonurl = urlopen("https://" + env.get('AUTH0_ISSUER_BASE_URL') + "/.well-known/jwks.json")
+    BASE_URL = env.get('AUTH0_ISSUER_BASE_URL')
+    jsonurl = urlopen(f'https://{BASE_URL}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
 
     rsa_key = get_rsa_key(token, jwks)
@@ -41,21 +42,21 @@ def decode_jwt(token):
         payload = jwt.decode(
             token,
             rsa_key,
-            algorithms=["RS256"],
+            algorithms=['RS256'],
             audience=env.get('AUTH0_AUDIENCE'),
-            issuer="https://" + env.get('AUTH0_ISSUER_BASE_URL') + "/"
+            issuer=f'https://{BASE_URL}/'
         )
 
         return payload
     return None
 
 def requires_auth(func):
-    """Determines if the access token is valid
-    """
+    '''Determines if the access token is valid
+    '''
 
     @wraps(func)
     def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization').split(' ')[1]
+        token = get_auth_token(request)
         payload = decode_jwt(token)
         if payload:
             _request_ctx_stack.top.current_user = payload

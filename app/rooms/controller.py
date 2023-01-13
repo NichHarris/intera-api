@@ -164,7 +164,7 @@ def get_all_rooms():
     return (1, 'success', list(all_rooms))
 
 
-def get_all_rooms_by_id(user_id):
+def get_all_rooms_by_user(user_id):
     try:
         all_rooms = rooms.find({ '$and': [{'users': user_id}, {'active': False}]}, {'_id': 0}).sort('date_created', -1)
     except errors.PyMongoError as err:
