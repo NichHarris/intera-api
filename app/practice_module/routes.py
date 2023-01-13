@@ -74,3 +74,26 @@ def update_word_classification():
         return jsonify(error=message, status=401)
     else:
         return jsonify(message=message, status=200)
+
+
+#####################
+# SocketIO Handlers #
+#####################
+
+# from flask_socketio import SocketIO, emit, join_room, namespace
+# from app import create_app
+
+# # Not sure about this
+# socket_io = SocketIO(create_app())
+
+# NAMESPACE = '/practice_module'
+
+# @socket_io.on('start_recording', namespace=NAMESPACE)
+# def start_recording(data):
+#     room_id = data['room_id']
+#     user_id = data['user_id']
+
+# @socket_io.on('stop_recording', namespace=NAMESPACE)
+# def stop_recording(data):
+#     room_id = data['room_id']
+#     user_id = data['user_id']

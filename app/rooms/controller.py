@@ -126,8 +126,18 @@ def update_room_status(room_id, status):
 
 
 def get_room_users(room_id):
-    pass
-
+    try:
+        room = rooms.find_one({'room_id': room_id}, {'_id': 0})
+    except errors.PyMongoError as err:
+        return (0, err._message, None)
+    
+    if room is None:
+        return (0, 'Room does not exist', None)
+    
+    if room['users']:
+        return (1, 'success', room['users'])
+    else:
+        return (0, 'Room has no users', None)
 
 def add_room_messages(room_id, messages):
     try:
@@ -154,7 +164,7 @@ def get_all_rooms():
     return (1, 'success', list(all_rooms))
 
 
-def get_all_rooms_by_id(user_id):
+def get_all_rooms_by_user(user_id):
     try:
         all_rooms = rooms.find({ '$and': [{'users': user_id}, {'active': False}]}, {'_id': 0}).sort('date_created', -1)
     except errors.PyMongoError as err:
