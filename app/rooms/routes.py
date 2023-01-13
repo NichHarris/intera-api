@@ -1,8 +1,8 @@
 from app.rooms import rooms
 from app.rooms import controller as rooms_api
 from app.transcripts import controller as transcripts_api
-from app.auth import auth
-import app
+import app.auth.controller as auth
+from app import create_app
 
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
@@ -10,12 +10,16 @@ from config import Config
 
 from flask_cors import CORS
 from flask import render_template, session, redirect, url_for, request, jsonify, Response
+# from flask_socketio import SocketIO, emit, join_room, namespace, leave_room, send, disconnect
+import flask_socketio as socketio
+# import socketIO_client as socketio
 
-from auth0.v3.authentication import Users, GetToken
+from auth0.v3.authentication import Users, GetToken, base
 from authlib.integrations.flask_oauth2 import ResourceProtector
 
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import *
+
 
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -24,23 +28,14 @@ ssl._create_default_https_context = ssl._create_unverified_context
 load_dotenv(find_dotenv())
 CORS(rooms, resources={r"/*": {"origins": "*"}})
 
-
-# TODO Remove this
-@rooms.route('/')
-def index():
-    if session:
-        return render_template('home.html')
-    else:
-        return render_template('home.html')
-        # redirect to login
-        # TODO use next js to fetch
-        # return redirect(url_for('auth.login'))
-
-
 @rooms.get('/create_room_id')
+@auth.requires_auth
 def create_room_id():
     room_id = rooms_api.generate_room_id()
+    token = request.headers.get('Authorization').split(' ')[1]
 
+
+    user_info = auth.decode_jwt(token)
     invite_link = f'{Config.BASE_URL}/api/rooms/join_room?room_id={room_id}'
 
     res = {
@@ -60,7 +55,8 @@ def email_invite():
 
     msg = None
     if email:
-        
+
+        # TODO: Format
         invite_link = f'{Config.BASE_URL}/api/rooms/join_room?room_id={room_id}'
         message = Mail(from_email=From('harris.nicholas1998@gmail.com', 'Example From Name'),
             to_emails=To('harris.nicholas1998@gmail.com', 'Example To Name'),
@@ -209,3 +205,68 @@ def add_messages():
         return jsonify(error=message, status=401)
 
     return jsonify(message=message, data={'room_id': room_id}, status=200)
+
+
+#####################
+# SocketIO Handlers #
+#####################
+
+# TODO Handle returns
+
+NAMESPACE = '/rooms'
+
+app = create_app()
+socket_io = socketio.SocketIO(app, cors_allowed_origins='*')
+socket_io.run(app)
+
+@socket_io.on('connect', namespace=NAMESPACE)
+def connect():
+    print('Client connected')
+
+
+@socket_io.on('disconnect', namespace=NAMESPACE)
+def disconnect():
+    print('Client disconnected')
+
+
+@socket_io.on('create_room', namespace=NAMESPACE)
+def create_room(data):
+    pass
+
+
+@socket_io.on('join_room', namespace=NAMESPACE)
+def join_room(data):
+    room_id = data['room_id']
+    user_id = data['user_id']
+    join_room(room_id)
+
+
+@socket_io.on('leave_room', namespace=NAMESPACE)
+def leave_room(data):
+    room_id = data['room_id']
+    user_id = data['user_id']
+    
+    users = rooms_api.get_room_users(room_id)
+
+    if users == None:
+        return
+
+    # check if user is host
+    if user_id == users[0]:
+        # close room
+        socketio.close_room(room_id, namespace=NAMESPACE)
+
+        for user in users:
+            socketio.disconnect(user, namespace=NAMESPACE)
+    else:
+        socketio.leave_room(user_id, room_id, namespace=NAMESPACE)
+        socketio.disconnect(user_id, namespace=NAMESPACE)
+
+
+@socket_io.on('send_message', namespace=NAMESPACE)
+def send_message(data):
+    room_id = data['room_id']
+    user_id = data['user_id']
+    message = data['message']
+
+

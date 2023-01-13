@@ -3,6 +3,7 @@ from dotenv import find_dotenv, load_dotenv
 from flask import Flask
 from config import Config
 from flask_cors import CORS
+import flask_socketio as socketio
 
 # load .env file
 load_dotenv(find_dotenv())
@@ -15,7 +16,8 @@ def create_app():
     app.secret_key = APP_SECRET_KEY
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-    # Initialize Flask extensions here
+    socket_io = socketio.SocketIO(app, cors_allowed_origins="*")
+    # socket_io.run(app)
 
     # Register blueprints here
     with app.app_context():
@@ -30,5 +32,8 @@ def create_app():
 
         from app.practice_module import practice_module
         app.register_blueprint(practice_module, url_prefix='/api/practice')
+
+        from app.neural_net import neural_net
+        app.register_blueprint(neural_net, url_prefix='/api/neural_net')
 
     return app
