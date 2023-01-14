@@ -13,7 +13,7 @@ class Config(object):
     AUTH0_CLIENT_ID='YfFXlkN6VSJtKISCKRrUNUdqPDjp5oZb'
     AUTH0_DOMAIN='dev-gsbv87qpmgwdpjej.us.auth0.com'
     AUTH0_CALLBACK_URL='http://localhost:5000/auth/callback'
-    BASE_URL = 'http://localhost:5000'
+    BASE_URL= 'http://localhost:3000'
     MAIL_SERVER='smtp.sendgrid.net'
     MAIL_PORT=587
     MAIL_USE_TLS=True
