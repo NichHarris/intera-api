@@ -39,7 +39,6 @@ def get_management_token():
     CLIENT_SECRET = env.get('AUTH0_CLIENT_SECRET')
     DOMAIN = env.get('AUTH0_ISSUER_BASE_URL')
 
-
     payload = f"grant_type=client_credentials&client_id={CLIENT_ID}&client_secret={CLIENT_SECRET}&audience=https://{DOMAIN}/api/v2/"
 
     headers = { 'content-type': "application/json" }
@@ -52,7 +51,6 @@ def get_management_token():
     return data.decode("utf-8")
 
 def management_api_user():
-
     conn = http.client.HTTPSConnection("")
     yourMgmtApiAccessToken = ''
     headers = { 'authorization': f"Bearer {yourMgmtApiAccessToken}" }

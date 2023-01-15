@@ -14,7 +14,7 @@ from authlib.integrations.flask_oauth2 import ResourceProtector
 
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())
-CORS(practice_module, resources={r"/*": {"origins": "*"}})
+CORS(practice_module, resources={r"/*": {"origins": f'{Config.BASE_URL}/*'}})
 
 
 @practice_module.get('/get_word')
@@ -27,6 +27,7 @@ def get_word():
         return jsonify(error=message, status=401)
     else:
         return jsonify(message=message, data=word, status=200)
+
 
 @practice_module.post('/create_word')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
