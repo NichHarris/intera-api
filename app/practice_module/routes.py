@@ -1,6 +1,6 @@
 from app.practice_module import practice_module
 from app.practice_module import controller as practice_api
-from app.auth import auth
+# import app.auth.controller as auth
 
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
@@ -18,6 +18,7 @@ CORS(practice_module, resources={r"/*": {"origins": "*"}})
 
 
 @practice_module.get('/get_word')
+# @auth.requires_auth
 def get_word():
     status, message, word = practice_api.retrieve_random_word()
 
@@ -26,7 +27,9 @@ def get_word():
     else:
         return jsonify(message=message, data=word, status=200)
 
+
 @practice_module.post('/create_word')
+# @auth.requires_auth
 def create_word():
     word = request.args.get('word')
     url = request.args.get('url')
@@ -40,6 +43,7 @@ def create_word():
 
 
 @practice_module.get('/get_word_url')
+# @auth.requires_auth
 def get_word_url():
     word = request.args.get('word')
 
@@ -52,6 +56,7 @@ def get_word_url():
 
 
 @practice_module.delete('/delete_word')
+# @auth.requires_auth
 def delete_word():
     word = request.args.get('word')
 
@@ -64,6 +69,7 @@ def delete_word():
 
 
 @practice_module.put('/update_word_classification')
+# @auth.requires_auth
 def update_word_classification():
     word = request.args.get('word')
     classification = request.args.get('classification')
