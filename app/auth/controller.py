@@ -66,7 +66,7 @@ def management_api_user():
 
 def decode_jwt(token):
     BASE_URL = env.get('AUTH0_ISSUER_BASE_URL')
-    jsonurl = urlopen(f'https://{BASE_URL}/.well-known/jwks.json')
+    jsonurl = urlopen(f'{BASE_URL}/.well-known/jwks.json')
 
     # JSON Web Token key set
     jwks = json.loads(jsonurl.read())
@@ -78,12 +78,11 @@ def decode_jwt(token):
             token,
             rsa_key,
             algorithms=['RS256'],
-            audience=env.get('AUTH0_AUDIENCE'),
-            issuer=f'https://{BASE_URL}/'
+            audience=env.get('AUTH0_AUD'),
+            issuer=f'{BASE_URL}/'
         )
 
-        AUTH0_BASE_URL = env.get('AUTH0_ISSUER_BASE_URL')
-        if payload['iss'] != f'https://{AUTH0_BASE_URL}/':
+        if payload['iss'] != f'{BASE_URL}/':
             raise Exception('401 - Unauthorized Invalid issuer')
 
         return payload
