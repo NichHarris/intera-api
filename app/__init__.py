@@ -14,7 +14,8 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     app.secret_key = APP_SECRET_KEY
-    CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+    # TODO: Include cloud target URL in origins field once project is hosted remotely
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
     socket_io = socketio.SocketIO(app, cors_allowed_origins="*")
     # socket_io.run(app)
