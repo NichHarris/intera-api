@@ -76,12 +76,11 @@ def decode_jwt(token):
             token,
             rsa_key,
             algorithms=['RS256'],
-            audience=env.get('AUTH0_AUDIENCE'),
+            audience=env.get('AUTH0_CLIENT_ID'),
             issuer=f'https://{BASE_URL}/'
         )
 
-        AUTH0_BASE_URL = env.get('AUTH0_ISSUER_BASE_URL')
-        if payload['iss'] != f'https://{AUTH0_BASE_URL}/':
+        if payload['iss'] != f'https://{BASE_URL}/':
             raise Exception('401 - Unauthorized Invalid issuer')
 
         return payload

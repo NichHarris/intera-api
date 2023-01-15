@@ -27,6 +27,7 @@ load_dotenv(find_dotenv())
 CORS(rooms, resources={r"/*": {"origins": "*"}})
 
 @rooms.get('/create_room_id')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def create_room_id():
     room_id = rooms_api.generate_room_id()
@@ -45,6 +46,7 @@ def create_room_id():
 
 
 @rooms.post('/email_invite')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def email_invite():
     room_id = request.args.get('room_id')
@@ -78,6 +80,7 @@ def email_invite():
 
 
 @rooms.post('/register_room')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def register_room():
     room_id = request.args.get('room_id')
@@ -103,6 +106,8 @@ def register_room():
 
 # create route for joining room
 @rooms.put('/join_room')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@auth.requires_auth
 def join_room():
     room_id = request.args.get('room_id')
     user_info = auth.decode_jwt(auth.get_auth_token(request))
@@ -126,6 +131,7 @@ def join_room():
 
 
 @rooms.get('/get_room_info')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def get_room_info():
     room_id = request.args.get('room_id')
@@ -148,10 +154,11 @@ def get_room_info():
 
 
 @rooms.get('/get_all_rooms_by_user')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def get_all_rooms_by_user():
     user_id = request.args.get('user_id')
-    
+
     user_info = auth.decode_jwt(auth.get_auth_token(request))
     user_nickname = user_info['nickname']
 
@@ -171,6 +178,7 @@ def get_all_rooms_by_user():
     return res
 
 @rooms.put('/close_room')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def close_room():
     room_id = request.args.get('room_id')
@@ -186,6 +194,7 @@ def close_room():
 
 
 @rooms.put('/add_messages')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def add_messages():
     room_id = request.args.get('room_id')

@@ -3,10 +3,10 @@ import app.rooms.controller as rooms_api
 import app.practice_module.controller as practice_api
 import app.transcripts.controller as transcripts_api
 import random
+import sys
 
-n = 5
-host_user_ids = [str(uuid.uuid4()) for _ in range(n)]
-guest_user_ids = [str(uuid.uuid4()) for _ in range(n)]
+host_user_ids = ["Nick", "Abdul", "Matt", "Lisa", "Sharon", "Tarun", "Ali", "James", "Ben", "Samantha"]#[str(uuid.uuid4()) for _ in range(n)]
+guest_user_ids = ["Jim", "Jennifer", "Wade", "Chris", "Padme", "Tony", "Pepper", "Wilson", "Joe", "Jessica"]#[str(uuid.uuid4()) for _ in range(n)]
 
 messages = [
                 "Lorem ipsum dolor sit amet",
@@ -20,8 +20,31 @@ messages = [
                 "officia",
                 "deserunt",
                 "mollit anim id",
-                "est laborum."
-            ]
+                "est laborum.",
+                "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium",
+                "totam rem aperiam",
+                "eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
+                "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit",
+                "sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
+                "Neque porro quisquam est", 
+                "qui dolorem ipsum quia dolor sit amet",
+                "consectetur, adipisci velit",
+                "sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.",
+                "Ut enim ad minima veniam,",
+                "quis nostrum exercitationem ullam corporis suscipit laboriosam,",
+                "nisi ut aliquid ex ea commodi consequatur?",
+                "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur",
+                "vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
+                "Sed repellendus rerum quo aliquid cumque et adipisci voluptates ",
+                "eum fuga tempora qui porro repellat qui sint rerum.",
+                "Ex totam tempore est esse accusamus rem iste cupiditate!"
+                "Ut earum ratione non excepturi expedita ea neque quia id quia",
+                "quidem et aliquid atque?",
+                "Qui quidem veniam ut deserunt dignissimos",
+                "in vitae facere aut distinctio",
+                "consequatur qui aliquam assumenda",
+                "ut voluptatem eaque et nesciunt nihil."
+            ] # 35 messages
 
 words = {
             "hello": "https://www.youtube.com/watch?v=uKKvNqA9N20",
@@ -38,20 +61,18 @@ def populate_rooms(controller):
     host_type = SIGNER
     user_type = SPEAKER
 
-    for _ in range(n):
+    for _ in range(len(host_user_ids)):
         host_id = random.choice(host_user_ids)
         guest_id = random.choice(guest_user_ids)
 
         room_id = controller.generate_room_id()
-
-        #print(f'Room ID: {room_id}')
-
+        
         result, message = controller.create_room(room_id, host_id, host_type)
 
         if result == 1:
             result, message = controller.register_user_in_room(room_id, guest_id)
 
-            print(f'RoomID: {room_id} GuestID: {guest_id}: {message}')
+            print(f'RoomID: {room_id} HostID: {host_id} GuestID: {guest_id}: {message}')
 
         else:
             print(f'RoomID {room_id}: {message}')
@@ -81,14 +102,12 @@ def populate_msgs(controller_room, controller_trans):
                 from_user_info = host_info
                 to_user_info =  guest_info
 
-                for _ in range(n):
+                for _ in range(len(messages)):
                     message_to_send = random.choice(messages)
 
                     from_id = from_user_info[0]
                     to_id = to_user_info[0]
                     message_type = from_user_info[1]
-
-                    #print(f'Room ID: {room_id}')
 
                     result, message = controller_trans.create_message_entry(room_id, from_id, to_id, message_to_send, False, message_type, True)
 
@@ -108,11 +127,75 @@ def populate_words(controller):
 
         print(message)
 
+def populate_db_with_info(host_name, host_type, controller_room, controller_trans):
+    guest_name = random.choice(guest_user_ids)
+
+    room_id = controller_room.generate_room_id()
+
+    result_room, message_room = controller_room.create_room(room_id, host_name, host_type)
+
+    if result_room == 1:
+        register_result, register_message = controller_room.register_user_in_room(room_id, guest_name)
+
+        print(f'RoomID: {room_id} GuestID: {guest_name}: {register_message}')
+
+        if register_result == 1:
+            guest_type = SPEAKER if host_type == SIGNER else SIGNER
+
+            host_info = [host_name, host_type]
+            guest_info = [guest_name, guest_type]
+
+            from_user_info = host_info
+            to_user_info =  guest_info
+
+            for _ in range(len(messages)):
+                message_to_send = random.choice(messages)
+
+                from_name = from_user_info[0]
+                to_name = to_user_info[0]
+                message_type = from_user_info[1]
+
+                result, create_message = controller_trans.create_message_entry(room_id, from_name, to_name, message_to_send, False, message_type, True)
+
+                print(f'RoomID: {room_id}: {create_message}')
+                from_user_info, to_user_info = to_user_info, from_user_info
+        else:
+           print(f'RoomID {room_id}: {register_message}') 
+        
+    else:
+        print(f'RoomID {room_id}: {message_room}')
+
+
+
+
 if __name__ == "__main__":
-    # comment out the method u want to run or run all 3 if you want to
+    print("--------------------------------------------------------------------------------------")
+    print(sys.argv)
     
-    # populate_rooms(rooms_api)
+    # supply 2 arguements in this order
+    # host_name: String => Ex: Jason, Abdul, etc
+    # host_type: String => Ex: ASL, STT
+    # Ex execution: populate_db.py Jason STT
+    #             : populate_db.py Will ASL
+    if len(sys.argv) > 2: 
+        host_name = sys.argv[1]
+        host_type = sys.argv[2]
+        
+        print(f'{host_name} {host_type}')
+        populate_db_with_info(host_name, host_type, rooms_api, transcripts_api)
+    else:
+        print("Default script run.")
+        # comment out the method u want to run or run all 3 if you want to
+        
+        #populate_rooms(rooms_api)
 
-    # populate_msgs(rooms_api, transcripts_api)
+        populate_msgs(rooms_api, transcripts_api)
 
-    populate_words(practice_api)
+        # populate_words(practice_api)
+
+
+    # host_name = "Abdul2"
+    # host_type = SIGNER
+    
+    
+    # populate_db_with_info(host_name, host_type, rooms_api, transcripts_api)

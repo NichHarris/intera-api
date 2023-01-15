@@ -14,9 +14,8 @@ APP_SECRET_KEY = env.get("APP_SECRET_KEY")
 app = Flask(__name__)
 app.config.from_object(Config)
 app.secret_key = APP_SECRET_KEY
+# TODO: Include cloud target URL in origins field once project is hosted remotely
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-
-# socket_io.run(app)
 
 # Register blueprints here
 with app.app_context():
