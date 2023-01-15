@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.secret_key = APP_SECRET_KEY
 # TODO: Include cloud target URL in origins field once project is hosted remotely
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources={r"/api/*": {"origins": f'{Config.BASE_URL}/*'}})
 
 # Register blueprints here
 with app.app_context():
@@ -25,14 +25,15 @@ with app.app_context():
     from app.transcripts import transcripts
     app.register_blueprint(transcripts, url_prefix='/api/transcripts')
     
-    from app.auth import auth
-    app.register_blueprint(auth, url_prefix='/api/auth')
 
     from app.practice_module import practice_module
     app.register_blueprint(practice_module, url_prefix='/api/practice')
+
+    from app.auth import auth
+    app.register_blueprint(auth, url_prefix='/api/auth')
 
     from app.neural_net import neural_net
     app.register_blueprint(neural_net, url_prefix='/api/neural_net')
 
     # return app
-socket_io = socketio.SocketIO(app, cors_allowed_origins="*")
+socket_io = socketio.SocketIO(app, cors_allowed_origins=f'{Config.BASE_URL}/*')

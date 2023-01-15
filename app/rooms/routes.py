@@ -24,7 +24,8 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())
-CORS(rooms, resources={r"/*": {"origins": "*"}})
+CORS(rooms, resources={r"/*": {"origins": f'{Config.BASE_URL}/*'}})
+
 
 @rooms.get('/create_room_id')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
@@ -154,7 +155,7 @@ def get_room_info():
 
 
 @rooms.get('/get_all_rooms_by_user')
-@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+# @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def get_all_rooms_by_user():
     user_id = request.args.get('user_id')
@@ -172,10 +173,7 @@ def get_all_rooms_by_user():
         # error occured
         return jsonify(error=message, status=401)
 
-    res = jsonify(message=message, data=rooms, status=200)
-
-    res.headers.add('Access-Control-Allow-Origin', '*')
-    return res
+    return jsonify(message=message, data=rooms, status=200)
 
 @rooms.put('/close_room')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
