@@ -242,14 +242,18 @@ NAMESPACE = '/rooms'
 # socket_io = socketio.SocketIO(app, cors_allowed_origins="*")
 # socket_io.run(app)
 
-# @socket_io.on('connect', namespace=NAMESPACE)
-# def connect():
-#     print('Client connected')
+from app import socket_io
+
+@socket_io.on('connect', namespace=NAMESPACE)
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+def connect():
+    print('Client connected')
 
 
-# @socket_io.on('disconnect', namespace=NAMESPACE)
-# def disconnect():
-#     print('Client disconnected')
+@socket_io.on('disconnect', namespace=NAMESPACE)
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+def disconnect():
+    print('Client disconnected')
 
 
 # @socket_io.on('create_room', namespace=NAMESPACE)
