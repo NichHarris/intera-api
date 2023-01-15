@@ -79,7 +79,7 @@ def decode_jwt(token):
             rsa_key,
             algorithms=['RS256'],
             audience=env.get('AUTH0_CLIENT_ID'),
-            issuer=f'{BASE_URL}/'
+            issuer=f'https://{BASE_URL}/'
         )
 
         if payload['iss'] != f'https://{BASE_URL}/':
