@@ -20,7 +20,7 @@ Import the .env file provided under the `intera-api/` directory
 
 ## Start up server
 ```
-gunicorn --workers 4 --worker-class gevent -b 127.0.0.1:5000  app:app
+gunicorn --limit-request-line 0 --workers 9 --worker-connections=1000 -k gevent --reload -b 127.0.0.1:5000 app:app
 ```
 
 
