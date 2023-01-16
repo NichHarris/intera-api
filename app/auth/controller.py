@@ -3,7 +3,7 @@ from dotenv import find_dotenv, load_dotenv
 from functools import wraps
 from six.moves.urllib.request import urlopen
 from flask import _request_ctx_stack, request
-from jose import jwt
+from jose import jwt, ExpiredSignatureError
 import json
 import http.client
 
@@ -95,7 +95,12 @@ def requires_auth(func):
         token = get_auth_token(request)
         if not token:
             raise Exception('401 - Authorization header is expected')
-        payload = decode_jwt(token)
+
+        try:
+            payload = decode_jwt(token)
+        except ExpiredSignatureError:
+            raise Exception('401 - Token expired, reauthentication required')
+
         if payload:
             _request_ctx_stack.top.current_user = payload
             return func(*args, **kwargs)
