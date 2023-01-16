@@ -122,7 +122,7 @@ def populate_msgs(controller_room, controller_trans):
                     from_user_info, to_user_info = to_user_info, from_user_info
 
                 messages_room = controller_trans.get_all_messages_by_room(room_id, from_user_info[0])
-                controller_room.add_room_messages(room_id, messages_room)
+                controller_room.add_room_messages(room_id, messages_room[2])
             else:
                 print(f"Room {room_id} is a test room with {room_length} users.")
 
