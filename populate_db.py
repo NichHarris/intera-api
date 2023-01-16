@@ -1,7 +1,10 @@
 import uuid
-import app.rooms.controller as rooms_api
-import app.practice_module.controller as practice_api
-import app.transcripts.controller as transcripts_api
+from app.rooms import controller as rooms_api
+from app.practice_module import controller as practice_api
+from app.transcripts import controller as transcripts_api
+# # import app.rooms.controller as rooms_api
+# import app.practice_module.controller as practice_api
+# import app.transcripts.controller as transcripts_api
 import random
 import sys
 
@@ -77,6 +80,7 @@ def populate_rooms(controller):
         else:
             print(f'RoomID {room_id}: {message}')
 
+        controller.close_room(room_id)
         # switch the user types so that we get good dummy data
         # temp_host_type = host_type
         # host_type = user_type
@@ -116,8 +120,12 @@ def populate_msgs(controller_room, controller_trans):
                     # essentially for every iteration of the inner for loop we change
                     # who is receiving and sending the message
                     from_user_info, to_user_info = to_user_info, from_user_info
+
+                messages_room = controller_trans.get_all_messages_by_room(room_id, from_user_info[0])
+                controller_room.add_room_messages(room_id, messages_room)
             else:
                 print(f"Room {room_id} is a test room with {room_length} users.")
+
     else:
         print(f'Getting all rooms failed: {message}')
 
