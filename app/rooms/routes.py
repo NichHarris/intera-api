@@ -155,7 +155,7 @@ def get_room_info():
 
 
 @rooms.get('/get_all_rooms_by_user')
-# @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def get_all_rooms_by_user():
     user_id = request.args.get('user_id')
