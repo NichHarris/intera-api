@@ -170,6 +170,7 @@ def populate_db_with_info(host_name, host_type, controller_room, controller_tran
                 print(f'RoomID: {room_id}: {create_message}')
                 from_user_info, to_user_info = to_user_info, from_user_info
             
+            controller_room.update_room_status(room_id, False)
             messages_room = controller_trans.get_all_messages_by_room(room_id)
             controller_room.add_room_messages(room_id, messages_room[2])
         else:
