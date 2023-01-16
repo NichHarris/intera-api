@@ -80,7 +80,7 @@ def populate_rooms(controller):
         else:
             print(f'RoomID {room_id}: {message}')
 
-        controller.close_room(room_id)
+        controller.update_room_status(room_id, False)
         # switch the user types so that we get good dummy data
         # temp_host_type = host_type
         # host_type = user_type
@@ -121,7 +121,9 @@ def populate_msgs(controller_room, controller_trans):
                     # who is receiving and sending the message
                     from_user_info, to_user_info = to_user_info, from_user_info
 
-                messages_room = controller_trans.get_all_messages_by_room(room_id, from_user_info[0])
+                controller_room.update_room_status(room_id, False)
+
+                messages_room = controller_trans.get_all_messages_by_room(room_id)
                 controller_room.add_room_messages(room_id, messages_room[2])
             else:
                 print(f"Room {room_id} is a test room with {room_length} users.")
@@ -167,6 +169,9 @@ def populate_db_with_info(host_name, host_type, controller_room, controller_tran
 
                 print(f'RoomID: {room_id}: {create_message}')
                 from_user_info, to_user_info = to_user_info, from_user_info
+            
+            messages_room = controller_trans.get_all_messages_by_room(room_id)
+            controller_room.add_room_messages(room_id, messages_room[2])
         else:
            print(f'RoomID {room_id}: {register_message}') 
         

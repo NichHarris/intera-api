@@ -51,22 +51,18 @@ def edit_message_entry(room_id, user_id, new_text):
     return (0, 'Message not found')
 
 
-def get_all_messages_by_room(room_id, user_id):
-    message_count = messages.count_documents({ '$and': [{'room_id': room_id}, 
-        {'$or': [{'to': user_id}, {'from': user_id}]}]
-    })
+def get_all_messages_by_room(room_id):
+    message_count = messages.count_documents({'room_id': room_id})
 
     if message_count == 0:
         return (0, 'No messages found', [])
 
-    all_transcripts = messages.find({ '$and': [{'room_id': room_id}, 
-        {'$or': [{'to': user_id}, {'from': user_id}]}]
-    }, {'_id': 0}).sort('date_created', -1)
+    all_messages = messages.find({'room_id': room_id}).sort('date_created', -1)
 
-    return (1, 'success', list(all_transcripts))
+    return (1, 'success', list(all_messages))
 
 
-def get_message(room_id, user_id):
+def get_last_message(room_id, user_id):
     result = messages.find({'room_id': room_id, 'from': user_id}, {'_id': 0}).sort('date_created', -1).limit(1)
 
     for message in result:

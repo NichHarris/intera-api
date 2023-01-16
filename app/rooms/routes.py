@@ -5,7 +5,7 @@ import app.auth.controller as auth
 
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
-from config import Config
+from config import Config, parse_json
 
 from flask_cors import CORS, cross_origin
 from flask import render_template, session, redirect, url_for, request, jsonify, Response
@@ -173,7 +173,7 @@ def get_all_rooms_by_user():
         # error occured
         return jsonify(error=message, status=401)
 
-    return jsonify(message=message, data=rooms, status=200)
+    return jsonify(message=message, data=parse_json(rooms), status=200)
 
 @rooms.put('/close_room')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
@@ -210,8 +210,7 @@ def add_messages():
         # error occured
         return jsonify(error=message, status=401)
 
-    users_list = room['users']
-    status, message, transcript = transcripts_api.get_all_messages_by_room(room_id, users_list[0])
+    status, message, transcript = transcripts_api.get_all_messages_by_room(room_id)
 
     if status == 0:
         # error occured

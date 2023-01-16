@@ -66,7 +66,7 @@ def get_message():
     # user_id = request.form.get('user_id')
     user_id = request.args.get('user_id')
 
-    status, message, data = transcripts_api.get_message(room_id, user_id)
+    status, message, data = transcripts_api.get_last_message(room_id, user_id)
 
     if status == 0:
         return jsonify(error=message, status=401)
@@ -79,10 +79,8 @@ def get_message():
 @auth.requires_auth
 def get_messages():
     room_id = request.args.get('room_id')
-    # user_id = request.form.get('user_id')
-    user_id = request.args.get('user_id')
 
-    status, message, data = transcripts_api.get_all_messages_by_room(room_id, user_id)
+    status, message, data = transcripts_api.get_all_messages_by_room(room_id)
 
     if status == 0:
         return jsonify(error=message, status=401)
