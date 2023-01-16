@@ -147,7 +147,8 @@ def populate_db_with_info(host_name, host_type, controller_room, controller_tran
 
             from_user_info = host_info
             to_user_info =  guest_info
-
+            msgs_inserted_ids = []
+            
             for _ in range(len(messages)):
                 message_to_send = random.choice(messages)
 
@@ -155,10 +156,16 @@ def populate_db_with_info(host_name, host_type, controller_room, controller_tran
                 to_name = to_user_info[0]
                 message_type = from_user_info[1]
 
-                result, create_message = controller_trans.create_message_entry(room_id, from_name, to_name, message_to_send, False, message_type, True)
+                result, create_message, inserted_id = controller_trans.create_message_entry(room_id, from_name, to_name, message_to_send, False, message_type, True)
 
+                if inserted_id is not None:
+                    msgs_inserted_ids.append(inserted_id)
+                    
                 print(f'RoomID: {room_id}: {create_message}')
                 from_user_info, to_user_info = to_user_info, from_user_info
+            
+            controller_room.add_room_messages(room_id, msgs_inserted_ids)
+            controller_room.update_room_status(room_id, False)
         else:
            print(f'RoomID {room_id}: {register_message}') 
         
