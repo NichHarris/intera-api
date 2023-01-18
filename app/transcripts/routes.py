@@ -1,13 +1,12 @@
 from app.transcripts import transcripts
 from app.transcripts import controller as transcripts_api
-from app.auth import auth
-import app
+import app.auth.controller as auth
 
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from config import Config
 
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from flask import render_template, session, redirect, url_for, request, jsonify, Response
 from flask_mail import Message
 
@@ -16,10 +15,12 @@ from authlib.integrations.flask_oauth2 import ResourceProtector
 
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())
-CORS(transcripts, resources={r"/*": {"origins": "*"}})
+CORS(transcripts, resources={r"/*": {"origins": f'{Config.BASE_URL}/*'}})
 
 
 @transcripts.post('/create_message')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@auth.requires_auth
 def create_message():
     room_id = request.args.get('room_id')
     to_user = request.args.get('to_user')
@@ -41,6 +42,8 @@ def create_message():
 
 
 @transcripts.put('/edit_message')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@auth.requires_auth
 def edit_message():
     room_id = request.args.get('room_id')
     text = request.args.get('message')
@@ -56,12 +59,14 @@ def edit_message():
 
 
 @transcripts.get('/get_message')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@auth.requires_auth
 def get_message():
     room_id = request.args.get('room_id')
     # user_id = request.form.get('user_id')
     user_id = request.args.get('user_id')
 
-    status, message, data = transcripts_api.get_message(room_id, user_id)
+    status, message, data = transcripts_api.get_last_message(room_id, user_id)
 
     if status == 0:
         return jsonify(error=message, status=401)
@@ -70,12 +75,12 @@ def get_message():
 
 
 @transcripts.get('/get_messages')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@auth.requires_auth
 def get_messages():
     room_id = request.args.get('room_id')
-    # user_id = request.form.get('user_id')
-    user_id = request.args.get('user_id')
 
-    status, message, data = transcripts_api.get_all_messages_by_room(room_id, user_id)
+    status, message, data = transcripts_api.get_all_messages_by_room(room_id)
 
     if status == 0:
         return jsonify(error=message, status=401)

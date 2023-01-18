@@ -20,10 +20,10 @@ Import the .env file provided under the `intera-api/` directory
 
 ## Start up server
 ```
-flask run
+gunicorn --limit-request-line 0 --workers 9 --worker-connections=1000 -k gevent --reload -b 127.0.0.1:5000 app:app
 ```
 
 
 ### Updating requirements file when adding a package
-After installing a new package, update the `requirements.txt` file with the content from the command `pip3 freeze`
+After installing a new package, update the `requirements.txt` file with the content from the command `pip3 freeze > requirements.txt`
 

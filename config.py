@@ -3,6 +3,8 @@ from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from pymongo import MongoClient
 import certifi
+import json
+from bson import json_util
 
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())
@@ -29,3 +31,6 @@ class Database(object):
     messages_collection = 'messages'
     word_data_collection = 'word_data'
     attemted_words_collection = 'attemted_words'
+
+def parse_json(data):
+    return json.loads(json_util.dumps(data))

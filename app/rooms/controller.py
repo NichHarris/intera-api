@@ -102,7 +102,7 @@ def get_room(room_id):
     
     if room is None:
         return (0, 'Room does not exist', None)
-    
+
     return (1, 'success', room)
 
 
@@ -140,13 +140,18 @@ def get_room_users(room_id):
         return (0, 'Room has no users', None)
 
 def add_room_messages(room_id, messages):
+    message_ids = []
+    for message in messages:
+        message_ids.append(message['_id'])
+    
     try:
-        room = rooms.find_one_and_update({'room_id': room_id}, {'$push': {'messages': messages}})
+        for message in message_ids:
+            rooms.find_one_and_update({'room_id': room_id}, {'$push': {'messages': message}})
     except errors.PyMongoError as err:
         return (0, err._message)
     
-    if room is None:
-        return (0, 'Room does not exist')
+    # if room is None:
+    #     return (0, 'Room does not exist')
 
     return (1, 'success')
 
@@ -166,7 +171,22 @@ def get_all_rooms():
 
 def get_all_rooms_by_user(user_id):
     try:
-        all_rooms = rooms.find({ '$and': [{'users': user_id}, {'active': False}]}, {'_id': 0}).sort('date_created', -1)
+        all_rooms = rooms.aggregate([
+            {
+                '$match': { 'users': user_id, 'active': False }
+            }, {
+                '$lookup': {
+                    'from': "messages",
+                    'localField': "messages",
+                    'foreignField': "_id",
+                    'as': "messages_info"
+                },
+            }, {
+                '$sort': {
+                    'date_created': -1
+                }
+            }]
+        )
     except errors.PyMongoError as err:
         return (0, err._message, [])
     except errors.DocumentTooLarge as err:

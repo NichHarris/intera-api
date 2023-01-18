@@ -2,13 +2,12 @@ from app.rooms import rooms
 from app.rooms import controller as rooms_api
 from app.transcripts import controller as transcripts_api
 import app.auth.controller as auth
-from app import create_app
 
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
-from config import Config
+from config import Config, parse_json
 
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from flask import render_template, session, redirect, url_for, request, jsonify, Response
 # from flask_socketio import SocketIO, emit, join_room, namespace, leave_room, send, disconnect
 import flask_socketio as socketio
@@ -20,15 +19,16 @@ from authlib.integrations.flask_oauth2 import ResourceProtector
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import *
 
-
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())
-CORS(rooms, resources={r"/*": {"origins": "*"}})
+CORS(rooms, resources={r"/*": {"origins": f'{Config.BASE_URL}/*'}})
+
 
 @rooms.get('/create_room_id')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def create_room_id():
     room_id = rooms_api.generate_room_id()
@@ -36,7 +36,7 @@ def create_room_id():
     user_info = auth.decode_jwt(token)
     print(user_info)
 
-    invite_link = f'{Config.BASE_URL}/api/rooms/join_room?room_id={room_id}'
+    invite_link = f'{Config.BASE_URL}/room/{room_id}'
 
     res = {
         'room_id': room_id,
@@ -47,6 +47,7 @@ def create_room_id():
 
 
 @rooms.post('/email_invite')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def email_invite():
     room_id = request.args.get('room_id')
@@ -60,7 +61,7 @@ def email_invite():
     if email:
 
         # TODO: Format
-        invite_link = f'{Config.BASE_URL}/api/rooms/join_room?room_id={room_id}'
+        invite_link = f'{Config.BASE_URL}/room/{room_id}'
         message = Mail(from_email=From(from_email, 'Example From Name'),
             to_emails=To(to_email, 'Example To Name'),
             subject=Subject('Sending with SendGrid is Fun'),
@@ -80,6 +81,7 @@ def email_invite():
 
 
 @rooms.post('/register_room')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def register_room():
     room_id = request.args.get('room_id')
@@ -87,12 +89,12 @@ def register_room():
     user_info = auth.decode_jwt(auth.get_auth_token(request))
     user_id = user_info['nickname']
 
-    # validate room doesn't exist
-    status, message = rooms_api.validate_room(room_id, user_id)
+    # # validate room doesn't exist
+    # status, message = rooms_api.validate_room(room_id, user_id)
 
-    if status != 0:
-        # error occured
-        return jsonify(error=message, status=401)
+    # if status != 0:
+    #     # error occured
+    #     return jsonify(error=message, status=401)
 
     status, message = rooms_api.create_room(room_id, user_id, host_type)
 
@@ -105,6 +107,8 @@ def register_room():
 
 # create route for joining room
 @rooms.put('/join_room')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@auth.requires_auth
 def join_room():
     room_id = request.args.get('room_id')
     user_info = auth.decode_jwt(auth.get_auth_token(request))
@@ -128,6 +132,7 @@ def join_room():
 
 
 @rooms.get('/get_room_info')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def get_room_info():
     room_id = request.args.get('room_id')
@@ -150,10 +155,11 @@ def get_room_info():
 
 
 @rooms.get('/get_all_rooms_by_user')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def get_all_rooms_by_user():
     user_id = request.args.get('user_id')
-    
+
     user_info = auth.decode_jwt(auth.get_auth_token(request))
     user_nickname = user_info['nickname']
 
@@ -167,10 +173,10 @@ def get_all_rooms_by_user():
         # error occured
         return jsonify(error=message, status=401)
 
-    return jsonify(message=message, data=rooms, status=200)
-
+    return jsonify(message=message, data=parse_json(rooms), status=200)
 
 @rooms.put('/close_room')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def close_room():
     room_id = request.args.get('room_id')
@@ -186,6 +192,7 @@ def close_room():
 
 
 @rooms.put('/add_messages')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def add_messages():
     room_id = request.args.get('room_id')
@@ -203,8 +210,7 @@ def add_messages():
         # error occured
         return jsonify(error=message, status=401)
 
-    users_list = room['users']
-    status, message, transcript = transcripts_api.get_all_messages_by_room(room_id, users_list[0])
+    status, message, transcript = transcripts_api.get_all_messages_by_room(room_id)
 
     if status == 0:
         # error occured
@@ -228,58 +234,65 @@ def add_messages():
 
 NAMESPACE = '/rooms'
 
-app = create_app()
-socket_io = socketio.SocketIO(app, cors_allowed_origins='*')
-socket_io.run(app)
+# app = create_app()
+# from app import socket_io
+# from app import app
+
+# socket_io = socketio.SocketIO(app, cors_allowed_origins="*")
+# socket_io.run(app)
+
+from app import socket_io
 
 @socket_io.on('connect', namespace=NAMESPACE)
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def connect():
     print('Client connected')
 
 
 @socket_io.on('disconnect', namespace=NAMESPACE)
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def disconnect():
     print('Client disconnected')
 
 
-@socket_io.on('create_room', namespace=NAMESPACE)
-def create_room(data):
-    pass
+# @socket_io.on('create_room', namespace=NAMESPACE)
+# def create_room(data):
+#     pass
 
 
-@socket_io.on('join_room', namespace=NAMESPACE)
-def join_room(data):
-    room_id = data['room_id']
-    user_id = data['user_id']
-    join_room(room_id)
+# @socket_io.on('join_room', namespace=NAMESPACE)
+# def join_room(data):
+#     room_id = data['room_id']
+#     user_id = data['user_id']
+#     join_room(room_id)
 
 
-@socket_io.on('leave_room', namespace=NAMESPACE)
-def leave_room(data):
-    room_id = data['room_id']
-    user_id = data['user_id']
+# @socket_io.on('leave_room', namespace=NAMESPACE)
+# def leave_room(data):
+#     room_id = data['room_id']
+#     user_id = data['user_id']
     
-    users = rooms_api.get_room_users(room_id)
+#     users = rooms_api.get_room_users(room_id)
 
-    if users == None:
-        return
+#     if users == None:
+#         return
 
-    # check if user is host
-    if user_id == users[0]:
-        # close room
-        socketio.close_room(room_id, namespace=NAMESPACE)
+#     # check if user is host
+#     if user_id == users[0]:
+#         # close room
+#         socketio.close_room(room_id, namespace=NAMESPACE)
 
-        for user in users:
-            socketio.disconnect(user, namespace=NAMESPACE)
-    else:
-        socketio.leave_room(user_id, room_id, namespace=NAMESPACE)
-        socketio.disconnect(user_id, namespace=NAMESPACE)
+#         for user in users:
+#             socketio.disconnect(user, namespace=NAMESPACE)
+#     else:
+#         socketio.leave_room(user_id, room_id, namespace=NAMESPACE)
+#         socketio.disconnect(user_id, namespace=NAMESPACE)
 
 
-@socket_io.on('send_message', namespace=NAMESPACE)
-def send_message(data):
-    room_id = data['room_id']
-    user_id = data['user_id']
-    message = data['message']
+# @socket_io.on('send_message', namespace=NAMESPACE)
+# def send_message(data):
+#     room_id = data['room_id']
+#     user_id = data['user_id']
+#     message = data['message']
 
 
