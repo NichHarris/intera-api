@@ -232,7 +232,6 @@ if __name__ == "__main__":
     if args.file:
         input_file = args.file
         # TODO: add functionality to populate database with user data from a file
-        print(args.file)
 
     if args.user and args.type:
         print(f'{args.user} {args.type}')
@@ -240,7 +239,6 @@ if __name__ == "__main__":
 
     if args.words:
         populate_words_db(args.words)
-        print(args.words)
 
     if args.default:
         print("Default script run.")
