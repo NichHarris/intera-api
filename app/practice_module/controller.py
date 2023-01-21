@@ -18,11 +18,11 @@ def create_word_entry(word, url, classified=True):
     try:
         count = word_data.count_documents({'word': word})
         if count != 0:
-            return (0, f'Word {word} already exists')
+            return (2, f'Word {word} already exists')
 
         result = word_data.insert_one(word_entry)
     except errors.DuplicateKeyError:
-        return (0, f'Word {word} already exists')
+        return (2, f'Word {word} already exists')
 
     if isinstance(result, results.InsertOneResult):
         if result.inserted_id:

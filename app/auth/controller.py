@@ -2,7 +2,7 @@ from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from functools import wraps
 from six.moves.urllib.request import urlopen
-from flask import _request_ctx_stack, request
+from flask import _request_ctx_stack, request, jsonify
 from jose import jwt, ExpiredSignatureError
 import json
 import http.client
@@ -81,7 +81,7 @@ def decode_jwt(token):
         )
 
         if payload['iss'] != f'https://{BASE_URL}/':
-            raise Exception('401 - Unauthorized Invalid issuer')
+            return jsonify(error='401 - Unauthorized Invalid issuer', status=401)
 
         return payload
     return None
@@ -91,12 +91,16 @@ def requires_auth(func):
     def decorated(*args, **kwargs):
         token = get_auth_token(request)
         if not token:
-            raise Exception('401 - Authorization header is expected')
+            return jsonify(error='401 - Authorization header is expected', status=401)
 
         try:
             payload = decode_jwt(token)
         except ExpiredSignatureError:
-            raise Exception('401 - Token expired, reauthentication required')
+            return jsonify(error='401 - Token expired, reauthentication required', status=401)
+
+
+        if 'error' in payload:
+            return jsonify(error=payload['error'], status=payload['status'])
 
         if payload:
             _request_ctx_stack.top.current_user = payload
