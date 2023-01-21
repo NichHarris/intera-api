@@ -241,18 +241,90 @@ NAMESPACE = '/rooms'
 # socket_io = socketio.SocketIO(app, cors_allowed_origins="*")
 # socket_io.run(app)
 
-from app import socket_io
+from app import s_webrtc
+from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
 
-@socket_io.on('connect', namespace=NAMESPACE)
+@s_webrtc.on('join')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+def join(message):
+    username = message['username']
+    room = message['room'] # flask_socketio uses the concept of "rooms" to have users to connect to
+    join_room(room) # flask_socketio method
+    print(f'User: {username} has joined the room: {room}')
+    emit('ready', {username: username}, to=room, skip_sid=request.sid) #forward username to other person in room
+     
+@s_webrtc.on('data')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+def transfer_data(message):
+    username = message['username']
+    room = message['room']
+    data = message['data']
+    print(f'Data event from user: {username} has sent the data: {data}')
+    emit('data', data, to=room, skip_sid=request.sid) #forward data (video feed) to other person in room
+  
+@s_webrtc.on_error_default
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+def default_error_handler(e):
+    print(f"Error: {e}")
+    s_webrtc.stop()
+
+@s_webrtc.on_error
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+def default_error_handler(e):
+    print(f"Error: {e}")
+    s_webrtc.stop()
+
+@s_webrtc.on('connect')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def connect():
-    print('Client connected')
+    print('Client connected!!!')
+    return Response('Client connected!!!!')
 
-
-@socket_io.on('disconnect', namespace=NAMESPACE)
+@s_webrtc.on('disconnect')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def disconnect():
-    print('Client disconnected')
+    print('Client disconnected!!!')
+    return Response('Client disconnected!!!')
+
+# @s_webrtc.on('join')
+# @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+# def join(message):
+#     username = message['username']
+#     room = message['room'] # flask_socketio uses the concept of "rooms" to have users to connect to
+#     join_room(room) # flask_socketio method
+#     print(f'User: {username} has joined the room: {room}')
+#     emit('ready', {username: username}, to=room, skip_sid=request.sid) #forward username to other person in room
+     
+# @s_webrtc.on('data')
+# @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+# def transfer_data(message):
+#     username = message['username']
+#     room = message['room']
+#     data = message['data']
+#     print(f'Data event from user: {username} has sent the data: {data}')
+#     emit('data', data, to=room, skip_sid=request.sid) #forward data (video feed) to other person in room
+  
+# @s_webrtc.on_error_default
+# @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+# def default_error_handler(e):
+#     print("Error: {e}")
+#     s_webrtc.stop()
+
+# @s_webrtc.on_error
+# @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+# def default_error_handler(e):
+#     print(f"Error: {e}")
+#     s_webrtc.stop()
+
+# @s_webrtc.on('connect')
+# @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+# def connect():
+#     print('Client connected')
+
+# @socket_io.on('disconnect', namespace=NAMESPACE)
+# @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+# def disconnect():
+#     print('Client disconnected')
 
 
 # @socket_io.on('create_room', namespace=NAMESPACE)

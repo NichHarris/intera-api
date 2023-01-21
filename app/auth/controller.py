@@ -87,9 +87,6 @@ def decode_jwt(token):
     return None
 
 def requires_auth(func):
-    '''Determines if the access token is valid
-    '''
-
     @wraps(func)
     def decorated(*args, **kwargs):
         token = get_auth_token(request)
