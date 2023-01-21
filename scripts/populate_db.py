@@ -183,27 +183,32 @@ def populate_db_with_info(host_name, host_type, controller_room, controller_tran
         print(f'RoomID {room_id}: {message_room}')
 
 def populate_words_db(count: int):
-    for word, url in words.items():
-        
-        if os.path.exists('top_words.json'):
-            with open('top_words.json', 'r') as file:
-                top_words = json.load(file)
 
-                words = top_words.keys()
-                code = 0
-                message = ''
-                for i, word in enumerate(words):
-                    if i >= count:
-                        code, message = practice_api.create_word_entry(word, url, False)
-                    else:
-                        code, message = practice_api.create_word_entry(word, url)
+    if os.path.exists('top_words.json'):
+        with open('top_words.json', 'r') as file:
+            top_words = json.load(file)
 
-                    if code != 1:
-                        print(message)
+            words = top_words.keys()
+            code = 0
+            message = ''
+            for i, word in enumerate(words):
+                url = top_words[word]
+                if i >= count:
+                    code, message = practice_api.create_word_entry(word, url, False)
+                else:
+                    code, message = practice_api.create_word_entry(word, url)
+
+                if code != 1:
+                    print(message)
+
+                    if i < count:
+                        practice_api.set_classified_status(word, True)
                     else:
-                        print(f'Word {word} added to database.')
-        else:
-            print("Top words file does not exist.")
+                        practice_api.set_classified_status(word, False)
+                else:
+                    print(f'Word {word} added to database.')
+    else:
+        print("Top words file does not exist.")
 
 
 
