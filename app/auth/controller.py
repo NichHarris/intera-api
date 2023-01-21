@@ -98,7 +98,8 @@ def requires_auth(func):
         except ExpiredSignatureError:
             return jsonify(error='401 - Token expired, reauthentication required', status=401)
 
-        if payload['error']:
+
+        if 'error' in payload:
             return jsonify(error=payload['error'], status=payload['status'])
 
         if payload:

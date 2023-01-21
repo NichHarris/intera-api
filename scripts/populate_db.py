@@ -134,12 +134,6 @@ def populate_msgs(controller_room, controller_trans):
     else:
         print(f'Getting all rooms failed: {message}')
 
-def populate_words(controller):
-    for word, url in words.items():
-        result, message = controller.create_word_entry(word, url)
-
-        print(message)
-
 def populate_db_with_info(host_name, host_type, controller_room, controller_trans):
     guest_name = random.choice(guest_user_ids)
 
@@ -245,3 +239,5 @@ if __name__ == "__main__":
         populate_rooms(rooms_api)
 
         populate_msgs(rooms_api, transcripts_api)
+
+    print(args)
