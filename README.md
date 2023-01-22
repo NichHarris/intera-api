@@ -21,6 +21,7 @@ Import the .env file provided under the `intera-api/` directory
 ## Start up server
 ```
 gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --reload -b 0.0.0.0:5000 app:app
+
 ```
 
 
