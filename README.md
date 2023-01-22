@@ -20,10 +20,21 @@ Import the .env file provided under the `intera-api/` directory
 
 ## Start up server
 ```
-gunicorn -k eventlet -w 1 --reload -b localhost:5000 app:app
+gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --reload -b 0.0.0.0:5000 app:app
+
 ```
 
 
 ### Updating requirements file when adding a package
 After installing a new package, update the `requirements.txt` file with the content from the command `pip3 freeze > requirements.txt`
 
+
+### Docket Setup
+1. Move `docker-compose.yaml` into project root directory i.e above `intera-api/`
+2. Create a copy of `.env` file and name it `.env.dev`
+3. Run `docker-compose build`
+4. Run `docker-compose up -d`
+
+
+### Debugging with Docker
+Run Debug `docker-compose logs -f`

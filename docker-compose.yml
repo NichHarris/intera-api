@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./intera-api/
+    command: gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --reload -b 0.0.0.0:5000 app:app
+    volumes:
+      - ./intera-api/:/intera-app/
+    ports:
+      - 5000:5000
+    env_file:
+      - ./intera-api/.env.dev
