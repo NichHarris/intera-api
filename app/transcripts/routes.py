@@ -22,10 +22,10 @@ CORS(transcripts, resources={r"/*": {"origins": f'{Config.BASE_URL}/*'}})
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def create_message():
-    room_id = request.args.get('room_id')
-    to_user = request.args.get('to_user')
-    text = request.args.get('message')
-    type = request.args.get('type')
+    room_id = request.get_json(silent=True).get('room_id')
+    to_user = request.get_json(silent=True).get('to_user')
+    text = request.get_json(silent=True).get('message')
+    type = request.get_json(silent=True).get('type')
 
     # todo can clean up and make method to append all errors
     if room_id is None:
@@ -54,10 +54,10 @@ def create_message():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def edit_message():
-    room_id = request.args.get('room_id')
-    text = request.args.get('message')
+    room_id = request.get_json(silent=True).get('room_id')
+    text = request.get_json(silent=True).get('message')
 
-    message_id = request.args.get('message_id')
+    message_id = request.get_json(silent=True).get('message_id')
 
     # todo can clean up and make method to append all errors
     if room_id is None:
