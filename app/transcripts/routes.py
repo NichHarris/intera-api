@@ -22,10 +22,14 @@ CORS(transcripts, resources={r"/*": {"origins": f'{Config.BASE_URL}/*'}})
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def create_message():
-    room_id = request.get_json(silent=True).get('room_id')
-    to_user = request.get_json(silent=True).get('to_user')
-    text = request.get_json(silent=True).get('message')
-    type = request.get_json(silent=True).get('type')
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify(error='No body provided', status=400)
+
+    room_id = body.get('room_id')
+    to_user = body.get('to_user')
+    text = body.get('message')
+    type = body.get('type')
 
     # todo can clean up and make method to append all errors
     if room_id is None:
@@ -54,10 +58,13 @@ def create_message():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def edit_message():
-    room_id = request.get_json(silent=True).get('room_id')
-    text = request.get_json(silent=True).get('message')
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify(error='No body provided', status=400)
 
-    message_id = request.get_json(silent=True).get('message_id')
+    room_id = body.get('room_id')
+    text = body.get('message')
+    message_id = body.get('message_id')
 
     # todo can clean up and make method to append all errors
     if room_id is None:

@@ -33,8 +33,12 @@ def get_word():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def create_word():
-    word = request.get_json(silent=True).get('word')
-    url = request.get_json(silent=True).get('url')
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify(error='No body provided', status=400)
+
+    word = body.get('word')
+    url = body.get('url')
 
     if word is None:
         return jsonify(error='Word not provided', status=400)
@@ -70,7 +74,11 @@ def get_word_url():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def delete_word():
-    word = request.get_json(silent=True).get('word')
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify(error='No body provided', status=400)
+
+    word = body.get('word')
 
     if word is None:
         return jsonify(error='Word not provided', status=400)
@@ -87,7 +95,11 @@ def delete_word():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def update_word_classification():
-    word = request.get_json(silent=True).get('word')
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify(error='No body provided', status=400)
+
+    word = body.get('word')
     classification = request.args.get('classification')
 
     if word is None:

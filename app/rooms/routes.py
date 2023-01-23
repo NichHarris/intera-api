@@ -50,8 +50,13 @@ def create_room_id():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def email_invite():
-    room_id = request.get_json(silent=True).get('room_id')
-    to_email = request.get_json(silent=True).get('email')
+
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify(error='No body provided', status=400)
+
+    room_id = body.get('room_id')
+    to_email = body.get('email')
     
     if room_id is None:
         return jsonify(error='Room ID not provided', status=400)
@@ -90,8 +95,12 @@ def email_invite():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def register_room():
-    room_id = request.get_json(silent=True).get('room_id')
-    host_type = request.get_json(silent=True).get('host_type')
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify(error='No body provided', status=400)
+
+    room_id = body.get('room_id')
+    host_type = body.get('host_type')
     
     if room_id is None:
         return jsonify(error='Room ID not provided', status=400)
@@ -124,7 +133,11 @@ def register_room():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def join_room():
-    room_id = request.get_json(silent=True).get('room_id')
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify(error='No body provided', status=400)
+
+    room_id = body.get('room_id')
 
     if room_id is None:
         return jsonify(error='Room ID not provided', status=400)
@@ -195,7 +208,11 @@ def get_all_rooms_by_user():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def close_room():
-    room_id = request.get_json(silent=True).get('room_id')
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify(error='No body provided', status=400)
+
+    room_id = body.get('room_id')
 
     if room_id is None:
         return jsonify(error='Room ID not provided', status=400)
@@ -214,7 +231,11 @@ def close_room():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def add_messages():
-    room_id = request.get_json(silent=True).get('room_id')
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify(error='No body provided', status=400)
+
+    room_id = body.get('room_id')
 
     if room_id is None:
         return jsonify(error='Room ID not provided', status=400)
