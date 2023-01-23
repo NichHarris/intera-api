@@ -180,7 +180,7 @@ def get_room_info():
         # error occured
         return jsonify(error=message, status=404)
 
-    return jsonify(message=message, data=parse_json(room[0]), status=200)
+    return jsonify(message=message, data=parse_json(room), status=200)
 
 
 @rooms.get('/get_all_rooms_by_user')
