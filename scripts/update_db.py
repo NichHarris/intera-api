@@ -73,16 +73,16 @@ if __name__ == "__main__":
     parser.add_argument('--messages', '-m', action='store_true', help='Update messages collection')
     parser.add_argument('--words', '-w', action='store_true', help='Update words collection')
 
-    parser.add_argument('--add', '-a', type=str, default=None, help='Add a field to collection => Ex: ')
-    parser.add_argument('--remove', '-rm', type=str, default=None, help='Remove a field from collection => Ex: ')
-    # parser.add_argument('--update', '-u', type=str, default=None, help='Update a field in collection => Ex: ')
+    parser.add_argument('--add', '-a', type=str, default=None, help='Add a field to collection => Ex: upgrade_db.py --rooms -a <new_field> -s ')
+    parser.add_argument('--remove', '-rm', type=str, default=None, help='Remove a field from collection => Ex: upgrade_db.py --rooms -rm <field_to_remove>')
+    # parser.add_argument('--update', '-u', type=str, default=None, help='Update a field in collection => Ex: upgrade_db.py --rooms -u <field_to_update> -s')
 
-    parser.add_argument('--string', '-s', action='store_true', help='Default value to update field with => Ex: ')
-    parser.add_argument('--int', '-i', action='store_true', help='Default value to update field with => Ex: ')
+    parser.add_argument('--string', '-s', action='store_true', help='Default value to update field with')
+    parser.add_argument('--int', '-i', action='store_true', help='Default value to update field with')
     # parser.add_argument('--float', '-fl', action='store_true', help='Default value to update field with => Ex: ')
     # parser.add_argument('--list', '-l', action='store_true', help='Default value to update field with => Ex: ')
     # parser.add_argument('--dict', '-d', action='store_true', help='Default value to update field with => Ex: ')
-    parser.add_argument('--bool', '-b', type=str, default=None, help='Default value to update field with => Ex: ')
+    parser.add_argument('--bool', '-b', type=str, default=None, help='Default value to update field with')
     args = parser.parse_args()
 
     collection = None
