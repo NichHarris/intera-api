@@ -27,6 +27,16 @@ def create_message():
     text = request.args.get('message')
     type = request.args.get('type')
 
+    # todo can clean up and make method to append all errors
+    if room_id is None:
+        return jsonify(error='Room ID not provided', status=400)
+    if to_user is None:
+        return jsonify(error='To User not provided', status=400)
+    if text is None:
+        return jsonify(error='Message not provided', status=400)
+    if type is None:
+        return jsonify(error='Message type not provided', status=400)
+
     # get user id from token
     token = auth.get_auth_token(request)
     user_info = auth.decode_jwt(token)
@@ -48,6 +58,14 @@ def edit_message():
     text = request.args.get('message')
 
     message_id = request.args.get('message_id')
+
+    # todo can clean up and make method to append all errors
+    if room_id is None:
+        return jsonify(error='Room ID not provided', status=400)
+    if text is None:
+        return jsonify(error='Message not provided', status=400)
+    if message_id is None:
+        return jsonify(error='Message ID not provided', status=400)
 
     # get user id from token
     token = auth.get_auth_token(request)

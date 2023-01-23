@@ -53,10 +53,16 @@ def email_invite():
     room_id = request.args.get('room_id')
     to_email = request.args.get('email')
     
+    if room_id is None:
+        return jsonify(error='Room ID not provided', status=400)
+    if to_email is None:
+        return jsonify(error='Email not provided', status=400)
+
     token = auth.get_auth_token(request)
     user_info = auth.decode_jwt(token)
 
     from_email = user_info['email']
+    user_id = user_info['nickname']
 
     if email:
 
@@ -87,6 +93,11 @@ def register_room():
     room_id = request.args.get('room_id')
     host_type = request.args.get('host_type')
 
+    if room_id is None:
+        return jsonify(error='Room ID not provided', status=400)
+    if host_type is None:
+        return jsonify(error='Host type not provided', status=400)
+
     # get user id from token
     token = auth.get_auth_token(request)
     user_info = auth.decode_jwt(token)
@@ -114,6 +125,9 @@ def register_room():
 @auth.requires_auth
 def join_room():
     room_id = request.args.get('room_id')
+
+    if room_id is None:
+        return jsonify(error='Room ID not provided', status=400)
 
     # get user id from token
     token = auth.get_auth_token(request)
@@ -143,6 +157,9 @@ def join_room():
 def get_room_info():
     room_id = request.args.get('room_id')
 
+    if room_id is None:
+        return jsonify(error='Room ID not provided', status=400)
+
     # get room
     status, message, room = rooms_api.get_room(room_id)
     
@@ -157,15 +174,13 @@ def get_room_info():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def get_all_rooms_by_user():
-    user_id = request.args.get('user_id')
-
     # get user id from token
     token = auth.get_auth_token(request)
     user_info = auth.decode_jwt(token)
-    user_nickname = user_info['nickname']
+    user_id = user_info['nickname']
 
-    if user_id != user_nickname:
-        return jsonify(error='Unauthorized', status=401)
+    if user_id is None:
+        return jsonify(error='User ID unrecognized', status=401)
 
     # get all rooms
     status, message, rooms = rooms_api.get_all_rooms_by_user(user_id)
@@ -182,6 +197,9 @@ def get_all_rooms_by_user():
 def close_room():
     room_id = request.args.get('room_id')
 
+    if room_id is None:
+        return jsonify(error='Room ID not provided', status=400)
+
     # update room status
     status, message = rooms_api.update_room_status(room_id, False)
     
@@ -197,6 +215,9 @@ def close_room():
 @auth.requires_auth
 def add_messages():
     room_id = request.args.get('room_id')
+
+    if room_id is None:
+        return jsonify(error='Room ID not provided', status=400)
 
     status, message, transcript = transcripts_api.get_all_messages_by_room(room_id)
 

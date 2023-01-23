@@ -36,6 +36,11 @@ def create_word():
     word = request.args.get('word')
     url = request.args.get('url')
 
+    if word is None:
+        return jsonify(error='Word not provided', status=400)
+    if url is None:
+        return jsonify(error='URL not provided', status=400)
+
     status, message = practice_api.create_word_entry(word, url)
 
     if status == 0:
@@ -49,6 +54,9 @@ def create_word():
 @auth.requires_auth
 def get_word_url():
     word = request.args.get('word')
+
+    if word is None:
+        return jsonify(error='Word not provided', status=400)
 
     status, message, url = practice_api.get_word_video_url(word)
 
@@ -64,6 +72,9 @@ def get_word_url():
 def delete_word():
     word = request.args.get('word')
 
+    if word is None:
+        return jsonify(error='Word not provided', status=400)
+
     status, message = practice_api.delete_word(word)
 
     if status == 0:
@@ -78,6 +89,11 @@ def delete_word():
 def update_word_classification():
     word = request.args.get('word')
     classification = request.args.get('classification')
+
+    if word is None:
+        return jsonify(error='Word not provided', status=400)
+    if classification is None:
+        return jsonify(error='Classification status not provided', status=400)
 
     status, message = practice_api.set_classified_status(word, classification)
 
