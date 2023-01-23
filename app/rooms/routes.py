@@ -90,9 +90,9 @@ def email_invite():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 @auth.requires_auth
 def register_room():
-    room_id = request.args.get('room_id')
-    host_type = request.args.get('host_type')
-
+    room_id = request.get_json(silent=True).get('room_id')
+    host_type = request.get_json(silent=True).get('host_type')
+    
     if room_id is None:
         return jsonify(error='Room ID not provided', status=400)
     if host_type is None:
