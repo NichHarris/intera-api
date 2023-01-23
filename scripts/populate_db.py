@@ -63,7 +63,7 @@ words = {
 SPEAKER = "STT"
 SIGNER = "ASL"
 
-def populate_rooms(controller):
+def populate_rooms():
     host_type = SIGNER
     user_type = SPEAKER
 
@@ -71,27 +71,27 @@ def populate_rooms(controller):
         host_id = random.choice(host_user_ids)
         guest_id = random.choice(guest_user_ids)
 
-        room_id = controller.generate_room_id()
+        room_id = rooms_api.generate_room_id()
         
-        result, message = controller.create_room(room_id, host_id, host_type)
+        result, message = rooms_api.create_room(room_id, host_id, host_type)
 
         if result == 1:
-            result, message = controller.register_user_in_room(room_id, guest_id)
+            result, message = rooms_api.register_user_in_room(room_id, guest_id)
 
             print(f'RoomID: {room_id} HostID: {host_id} GuestID: {guest_id}: {message}')
 
         else:
             print(f'RoomID {room_id}: {message}')
 
-        controller.update_room_status(room_id, False)
+        rooms_api.update_room_status(room_id, False)
         # switch the user types so that we get good dummy data
         # temp_host_type = host_type
         # host_type = user_type
         # host_type, user_type = user_type, host_type
         host_type, user_type = user_type, host_type
 
-def populate_msgs(controller_room, controller_trans):
-    result, message, data = controller_room.get_all_rooms()
+def populate_msgs():
+    result, message, data = rooms_api.get_all_rooms()
 
     if result == 1:
         for room in data:
@@ -116,7 +116,7 @@ def populate_msgs(controller_room, controller_trans):
                     to_id = to_user_info[0]
                     message_type = from_user_info[1]
 
-                    result, message = controller_trans.create_message_entry(room_id, from_id, to_id, message_to_send, False, message_type, True)
+                    result, message = transcripts_api.create_message_entry(room_id, from_id, to_id, message_to_send, False, message_type, '')
 
                     print(f'RoomID: {room_id}: {message}')
                     # switch the from and to user info so that we get good dummy data
@@ -124,25 +124,25 @@ def populate_msgs(controller_room, controller_trans):
                     # who is receiving and sending the message
                     from_user_info, to_user_info = to_user_info, from_user_info
 
-                controller_room.update_room_status(room_id, False)
+                rooms_api.update_room_status(room_id, False)
 
-                messages_room = controller_trans.get_all_messages_by_room(room_id)
-                controller_room.add_room_messages(room_id, messages_room[2])
+                messages_room = transcripts_api.get_all_messages_by_room(room_id)
+                rooms_api.add_room_messages(room_id, messages_room[2])
             else:
                 print(f"Room {room_id} is a test room with {room_length} users.")
 
     else:
         print(f'Getting all rooms failed: {message}')
 
-def populate_db_with_info(host_name, host_type, controller_room, controller_trans):
+def populate_db_with_info(host_name, host_type):
     guest_name = random.choice(guest_user_ids)
 
-    room_id = controller_room.generate_room_id()
+    room_id = rooms_api.generate_room_id()
 
-    result_room, message_room = controller_room.create_room(room_id, host_name, host_type)
+    result_room, message_room = rooms_api.create_room(room_id, host_name, host_type)
 
     if result_room == 1:
-        register_result, register_message = controller_room.register_user_in_room(room_id, guest_name)
+        register_result, register_message = rooms_api.register_user_in_room(room_id, guest_name)
 
         print(f'RoomID: {room_id} GuestID: {guest_name}: {register_message}')
 
@@ -162,14 +162,14 @@ def populate_db_with_info(host_name, host_type, controller_room, controller_tran
                 to_name = to_user_info[0]
                 message_type = from_user_info[1]
 
-                result, create_message = controller_trans.create_message_entry(room_id, from_name, to_name, message_to_send, False, message_type, True)
+                result, create_message = transcripts_api.create_message_entry(room_id, from_name, to_name, message_to_send, False, message_type, '')
 
                 print(f'RoomID: {room_id}: {create_message}')
                 from_user_info, to_user_info = to_user_info, from_user_info
             
-            controller_room.update_room_status(room_id, False)
-            messages_room = controller_trans.get_all_messages_by_room(room_id)
-            controller_room.add_room_messages(room_id, messages_room[2])
+            rooms_api.update_room_status(room_id, False)
+            messages_room = transcripts_api.get_all_messages_by_room(room_id)
+            rooms_api.add_room_messages(room_id, messages_room[2])
         else:
            print(f'RoomID {room_id}: {register_message}') 
         
@@ -177,7 +177,6 @@ def populate_db_with_info(host_name, host_type, controller_room, controller_tran
         print(f'RoomID {room_id}: {message_room}')
 
 def populate_words_db(count: int):
-
     if os.path.exists('top_words.json'):
         with open('top_words.json', 'r') as file:
             top_words = json.load(file)
@@ -229,15 +228,15 @@ if __name__ == "__main__":
 
     if args.user and args.type:
         print(f'{args.user} {args.type}')
-        populate_db_with_info(args.user, args.type, rooms_api, transcripts_api)
+        populate_db_with_info(args.user, args.type)
 
     if args.words:
         populate_words_db(args.words)
 
     if args.default:
         print("Default script run.")
-        populate_rooms(rooms_api)
+        populate_rooms()
 
-        populate_msgs(rooms_api, transcripts_api)
+        populate_msgs()
 
     print(args)

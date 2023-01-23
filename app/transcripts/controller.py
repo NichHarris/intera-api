@@ -18,9 +18,9 @@ except errors.CollectionInvalid as err:
     print(err)
 
 
-def create_message_entry(room_id, to_user, from_user, text, edited=False, message_type='ASL', correct=True):
+def create_message_entry(room_id, to_user, from_user, text, edited=False, message_type='ASL', correct=''):
     message = {'date_created': datetime.now(), 'room_id': room_id, 'to': to_user, 'from': from_user, 'text': text,\
-        'edited': edited, 'message_type': message_type, 'correct': correct}
+        'edited': edited, 'message_type': message_type, 'corrected': correct}
 
     result = messages.insert_one(message)
 
@@ -41,7 +41,7 @@ def edit_message_entry(room_id, user_id, new_text):
         if message['edited']:
             return (0, 'Message already edited')
         
-        res = messages.update_one({'_id': message['_id']}, {'$set': {'text': new_text, 'edited': True}})
+        res = messages.update_one({'_id': message['_id']}, {'$set': {'corrected': new_text, 'edited': True}})
 
         if isinstance(res, results.UpdateResult):
             if res.matched_count == 1:

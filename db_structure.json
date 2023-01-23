@@ -22,7 +22,7 @@
     "text": "String",
     "edited": "Boolean",
     "message_type": "String",
-    "correct": "Boolean" 
+    "corrected": "String" 
     },
 
     "word_entry": {
