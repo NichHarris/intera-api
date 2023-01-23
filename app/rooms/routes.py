@@ -180,8 +180,6 @@ def get_room_info():
         # error occured
         return jsonify(error=message, status=404)
 
-
-
     return jsonify(message=message, data=parse_json(room.next()), status=200)
 
 
