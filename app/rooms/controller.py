@@ -126,8 +126,6 @@ def get_room(room_id):
     
     if room is None:
         return (0, 'Room does not exist', None)
-    if room.length == 0:
-        return (0, 'Room does not exist', None)
     return (1, 'success', list(room))
 
 

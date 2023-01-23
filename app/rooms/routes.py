@@ -179,7 +179,7 @@ def get_room_info():
     if status == 0:
         # error occured
         return jsonify(error=message, status=404)
-
+    print(room)
     return jsonify(message=message, data=parse_json(room), status=200)
 
 
