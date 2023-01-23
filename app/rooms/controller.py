@@ -96,14 +96,31 @@ def register_user_in_room(room_id, user_id):
 
 def get_room(room_id):
     try:
-        room = rooms.find_one({'room_id': room_id}, {'_id': 0})
+        # room = rooms.find_one({'room_id': room_id}, {'_id': 0})
+
+        room = rooms.aggregate([
+            {
+                '$match': {'room_id': room_id}
+            }, {
+                '$lookup': {
+                    'from': "messages",
+                    'localField': "messages",
+                    'foreignField': "_id",
+                    'as': "messages_info"
+                },
+            }, {
+                '$sort': {
+                    'date_created': -1
+                }
+            }]
+        )
     except errors.PyMongoError as err:
         return (0, err._message, None)
     
     if room is None:
         return (0, 'Room does not exist', None)
 
-    return (1, 'success', room)
+    return (1, 'success', list(room))
 
 
 def update_room_status(room_id, status):
@@ -149,9 +166,6 @@ def add_room_messages(room_id, messages):
             rooms.find_one_and_update({'room_id': room_id}, {'$push': {'messages': message}})
     except errors.PyMongoError as err:
         return (0, err._message)
-    
-    # if room is None:
-    #     return (0, 'Room does not exist')
 
     return (1, 'success')
 

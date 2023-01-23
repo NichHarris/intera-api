@@ -25,15 +25,14 @@ def create_message():
     room_id = request.args.get('room_id')
     to_user = request.args.get('to_user')
     text = request.args.get('message')
-
-    from_user = request.args.get('user_id')
     type = request.args.get('type')
-    # from_user = request.form.get('user_id')
-    # type = request.form.get('type')
 
-    # todo validate room id
+    # get user id from token
+    token = auth.get_auth_token(request)
+    user_info = auth.decode_jwt(token)
+    user_id = user_info['nickname']
 
-    status, message = transcripts_api.create_message_entry(room_id, to_user, from_user, text, message_type=type)
+    status, message = transcripts_api.create_message_entry(room_id, to_user, user_id, text, message_type=type)
 
     if status == 0:
         return jsonify(error=message, status=401)
@@ -47,8 +46,13 @@ def create_message():
 def edit_message():
     room_id = request.args.get('room_id')
     text = request.args.get('message')
-    # user_id = request.form.get('user_id')
-    user_id = request.args.get('user_id')
+
+    message_id = request.args.get('message_id')
+
+    # get user id from token
+    token = auth.get_auth_token(request)
+    user_info = auth.decode_jwt(token)
+    user_id = user_info['nickname']
 
     status, message = transcripts_api.edit_message_entry(room_id, user_id, text)
 
@@ -63,8 +67,11 @@ def edit_message():
 @auth.requires_auth
 def get_message():
     room_id = request.args.get('room_id')
-    # user_id = request.form.get('user_id')
-    user_id = request.args.get('user_id')
+
+    # get user id from token
+    token = auth.get_auth_token(request)
+    user_info = auth.decode_jwt(token)
+    user_id = user_info['nickname']
 
     status, message, data = transcripts_api.get_last_message(room_id, user_id)
 

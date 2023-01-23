@@ -86,7 +86,10 @@ def email_invite():
 def register_room():
     room_id = request.args.get('room_id')
     host_type = request.args.get('host_type')
-    user_info = auth.decode_jwt(auth.get_auth_token(request))
+
+    # get user id from token
+    token = auth.get_auth_token(request)
+    user_info = auth.decode_jwt(token)
     user_id = user_info['nickname']
 
     # # validate room doesn't exist
@@ -111,7 +114,10 @@ def register_room():
 @auth.requires_auth
 def join_room():
     room_id = request.args.get('room_id')
-    user_info = auth.decode_jwt(auth.get_auth_token(request))
+
+    # get user id from token
+    token = auth.get_auth_token(request)
+    user_info = auth.decode_jwt(token)
     user_id = user_info['nickname']
 
     # check if room is valid
@@ -137,21 +143,14 @@ def join_room():
 def get_room_info():
     room_id = request.args.get('room_id')
 
-    # # check if room is valid
-    # status, message = rooms_api.validate_room(room_id)
-
-    # if status == 0:
-    #     # error occured
-    #     return jsonify(error=message, status=401)
-
     # get room
     status, message, room = rooms_api.get_room(room_id)
     
     if status == 0:
         # error occured
-        return jsonify(error=message, status=401)
+        return jsonify(error=message, status=404)
 
-    return jsonify(message=message, data=room, status=200)
+    return jsonify(message=message, data=parse_json(room[0]), status=200)
 
 
 @rooms.get('/get_all_rooms_by_user')
@@ -160,7 +159,9 @@ def get_room_info():
 def get_all_rooms_by_user():
     user_id = request.args.get('user_id')
 
-    user_info = auth.decode_jwt(auth.get_auth_token(request))
+    # get user id from token
+    token = auth.get_auth_token(request)
+    user_info = auth.decode_jwt(token)
     user_nickname = user_info['nickname']
 
     if user_id != user_nickname:
@@ -197,24 +198,11 @@ def close_room():
 def add_messages():
     room_id = request.args.get('room_id')
 
-    # check if room is active 
-    # status, message = rooms_api.validate_room(room_id)
-
-    # if status == 0:
-    #     # error occured
-    #     return jsonify(error=message, status=401)
-
-    status, message, room = rooms_api.get_room(room_id)
-
-    if status == 0:
-        # error occured
-        return jsonify(error=message, status=401)
-
     status, message, transcript = transcripts_api.get_all_messages_by_room(room_id)
 
     if status == 0:
         # error occured
-        return jsonify(error=message, status=401)
+        return jsonify(error=message, status=404)
 
     # update messages array
     status, message = rooms_api.add_room_messages(room_id, transcript)

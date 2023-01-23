@@ -31,13 +31,16 @@ def create_message_entry(room_id, to_user, from_user, text, edited=False, messag
     return (0, 'Error creating message entry')
 
 
-def edit_message_entry(room_id, user_id, new_text):
+def edit_message_entry(room_id, user_id, new_text, message_id):
     result = messages.find({'room_id': room_id, 'from': user_id}).sort('date_created', -1).limit(1)
 
     for message in result:
         if message is None:
             return (0, 'No messages found')
         
+        if message['_id'] != message_id:
+            return (0, 'Message is not most recent message')
+
         if message['edited']:
             return (0, 'Message already edited')
         
