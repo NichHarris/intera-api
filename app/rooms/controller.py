@@ -126,7 +126,7 @@ def get_room(room_id):
     
     if room is None:
         return (0, 'Room does not exist', None)
-    return (1, 'success', list(room))
+    return (1, 'success', room)
 
 
 def update_room_status(room_id, status):
