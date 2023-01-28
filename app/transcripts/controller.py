@@ -38,7 +38,7 @@ def edit_message_entry(room_id, user_id, new_text, message_id):
         if message is None:
             return (0, 'No messages found')
         
-        if message['_id'] != message_id:
+        if str(message['_id']) != message_id:
             return (0, 'Message is not most recent message')
 
         if message['edited']:
