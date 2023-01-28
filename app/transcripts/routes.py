@@ -63,13 +63,13 @@ def edit_message():
         return jsonify(error='No body provided', status=400)
 
     room_id = body.get('room_id')
-    text = body.get('message')
+    message = body.get('message')
     message_id = body.get('message_id')
 
     # todo can clean up and make method to append all errors
     if room_id is None:
         return jsonify(error='Room ID not provided', status=400)
-    if text is None:
+    if message is None:
         return jsonify(error='Message not provided', status=400)
     if message_id is None:
         return jsonify(error='Message ID not provided', status=400)
@@ -79,7 +79,7 @@ def edit_message():
     user_info = auth.decode_jwt(token)
     user_id = user_info['nickname']
 
-    status, message = transcripts_api.edit_message_entry(room_id, user_id, text)
+    status, message = transcripts_api.edit_message_entry(room_id, user_id, message, message_id)
 
     if status == 0:
         return jsonify(error=message, status=401)
