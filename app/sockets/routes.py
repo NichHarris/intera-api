@@ -3,24 +3,36 @@ from app import socket_io
 from flask_socketio import emit, join_room, leave_room, close_room, rooms, disconnect
 from flask import request, Response
 from flask_cors import cross_origin
-  
+
 @socket_io.on_error_default
-@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@cross_origin(headers='*', supports_credentials=True)
 def default_error_handler(e):
     print(f"Error: {e}")
     socket_io.stop()
 
 @socket_io.on('connect')
-@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@cross_origin(headers='*', supports_credentials=True)
 def connect():
-    print('Client connected!!!')
+    emit('connect', {'data': f'User {request.sid} connected'})
     return Response('Client connected!!!!')
 
 @socket_io.on('disconnect')
-@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@cross_origin(headers='*', supports_credentials=True)
 def disconnect():
-    print('Client disconnected!!!')
+    emit('disconnect', {'data': f'User {request.sid} disconnected'})
     return Response('Client disconnected!!!')
+
+@socket_io.on('message')
+@cross_origin(headers='*', supports_credentials=True)
+def message(data):
+    emit('message', {'id': request.sid, 'data': data}, broadcast=True)
+    return Response('OK')
+
+@socket_io.on('mutate')
+@cross_origin(headers='*', supports_credentials=True)
+def mutate(data):
+    emit('mutate', {'id': request.sid, 'roomID': data['roomID']}, broadcast=True)
+    return Response('OK')
 
 # TODO: Add other routes
 
