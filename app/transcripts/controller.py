@@ -14,6 +14,7 @@ intera_calls_db = Database.client[Database.intera_calls_db]
 # get a reference to the collections
 try: 
     messages = intera_calls_db[Database.messages_collection]
+    rooms = intera_calls_db[Database.rooms_collection]
 except errors.CollectionInvalid as err:
     print(err)
 
@@ -26,6 +27,10 @@ def create_message_entry(room_id, to_user, from_user, text, edited=False, messag
 
     if isinstance(result, results.InsertOneResult):
         if result.inserted_id:
+
+            # Add message reference to corresponding room document
+            rooms.find_one_and_update({'room_id': room_id}, {'$push': {'messages': result.inserted_id}})
+
             return (1, 'Message created successfully')
     
     return (0, 'Error creating message entry')
