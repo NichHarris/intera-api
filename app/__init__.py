@@ -5,6 +5,7 @@ from config import Config
 import flask_socketio as socketio
 
 from flask_cors import CORS
+from flask_mail_sendgrid import MailSendGrid
 
 # load .env file
 load_dotenv(find_dotenv())
@@ -14,10 +15,12 @@ APP_SECRET_KEY = env.get("APP_SECRET_KEY")
 app = Flask(__name__)
 app.config.from_object(Config)
 app.secret_key = APP_SECRET_KEY
+app.config['MAIL_SENDGRID_API_KEY'] = env.get("MAIL_SENDGRID_API_KEY")
 
 CORS(app, resources={r"/api/*": {"origins": f'{Config.BASE_URL}/*'}})
 
 socket_io = socketio.SocketIO(app, cors_allowed_origins=[f'http://localhost:3000'])
+mail = MailSendGrid(app)
 
 # Register blueprints here
 from app.rooms import rooms

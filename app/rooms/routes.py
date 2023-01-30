@@ -2,7 +2,7 @@ from app.rooms import rooms
 from app.rooms import controller as rooms_api
 from app.transcripts import controller as transcripts_api
 import app.auth.controller as auth
-
+from app import mail
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from config import Config, parse_json
@@ -17,7 +17,7 @@ from auth0.v3.authentication import Users, GetToken, base
 from authlib.integrations.flask_oauth2 import ResourceProtector
 
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import *
+from flask_mail import Message
 
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -69,24 +69,16 @@ def email_invite():
     from_email = user_info['email']
     user_id = user_info['nickname']
 
-    if email:
-
-        # TODO: Format
+    if to_email:
+        # # TODO: Format
         invite_link = f'{Config.BASE_URL}/room/{room_id}'
-        message = Mail(from_email=From(from_email, 'Example From Name'),
-            to_emails=To(to_email, 'Example To Name'),
-            subject=Subject('Sending with SendGrid is Fun'),
-            plain_text_content=PlainTextContent(f'Invite link: {invite_link}'),
-            html_content=HtmlContent(f'<strong>and easy to do anywhere, even {invite_link}</strong>'))
-
-        sendgrid_api = SendGridAPIClient(env.get('SENDGRID_API_KEY'))
-        response = sendgrid_api.send(message)
-
-        print(response.status_code)
-        print(response.body)
-        print(response.headers)
+        msg = Message('Twilio SendGrid Test Email', recipients=['harris.nicholas1998@gmail.com'], sender='harris.nicholas1998@gmail.com')
+        msg.body = 'This is a test email!'
+        msg.html = '<p>This is a test email!</p>'
     else:
         return jsonify(error='Email not provided', status=401)
+
+    mail.send(msg)
 
     return jsonify(message='success', data={'room_id': room_id, 'email_id': 0}, status=200)
 

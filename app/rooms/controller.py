@@ -215,3 +215,19 @@ def get_all_rooms_by_user(user_id):
         return (0, str(err) , [])
 
     return (1, 'success', list(all_rooms))
+
+def is_host(user_id, room_id):
+
+    try:
+        room = rooms.find_one({'room_id': room_id})
+    except errors.PyMongoError as err:
+        return False
+
+    if room is None:
+        return False
+
+    users = room['users']
+    if users[0] == user_id:
+        return True
+    
+    return False
