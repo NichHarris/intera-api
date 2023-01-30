@@ -8,19 +8,19 @@ from app.transcripts import controller as transcripts_api
 from app.auth import controller as auth
   
 @socket_io.on_error_default
-@cross_origin(headers='*', supports_credentials=True)
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def default_error_handler(e):
     print(f"Error: {e}")
     socket_io.stop()
 
 @socket_io.on('connect')
-@cross_origin(headers='*', supports_credentials=True)
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def connect():
-    emit('connect', {'data': f'User {request.sid} connected'})
+    emit('connect', {'data': f'User {request.sid} connected'}, skip_sid=request.sid)
     return Response('Client connected!!!!')
 
 @socket_io.on('disconnect')
-@cross_origin(headers='*', supports_credentials=True)
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def disconnect():
     emit('disconnect', {'data': f'User {request.sid} disconnected'})
     return Response('Client disconnected!!!')
@@ -30,38 +30,38 @@ def disconnect():
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def join(data):    
 
-    # Need to figure out if we can send the auth header in the socket request
-    user_info = auth.decode_jwt(data['authorization'])
-    if user_info is None:
-        return Response('User not authenticated', status=401)
-    
-    user_id = user_info['nickname']
-
     room_id = data['room_id']
 
     join_room(room_id)
-    print(f'{user_id} has entered the room id: {room_id}.')
-    send(f'{user_id} has entered the room id: {room_id}.', to=room_id)
-    return Response(f'{user_id} has entered the room id: {room_id}.')
+    print(f'{request.sid} has entered the room id: {room_id}.')
+    emit('join', {'data': f'{request.sid} has entered the room id: {room_id}.', 'user_sid': request.sid}, to=room_id, skip_sid=request.sid)
+    return Response(f'{request.sid} has entered the room id: {room_id}.')
 
 @socket_io.on('leave')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def leave(data):
+    room_id = data['room_id']
     username = data['username']
-    room = data['room']
-    leave_room(room)
-    send(username + ' has left the room.', to=room)
+    
+    # check if username is host -> if so, delete room
+    if rooms_api.is_host(room_id, username):
+        emit('close_room', {'data': f'Room {room_id} has been closed.'}, to=room_id, skip_sid=request.sid)
+        close_room(room_id)
+    else:
+        emit('disconnect', {'data': f'{request.sid} has left the room id: {room_id}.', 'user_sid': request.sid}, to=room_id)
+    leave_room(room_id)
+    return Response('OK')
 
 @socket_io.on('message')
-@cross_origin(headers='*', supports_credentials=True)
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def message(data):
-    emit('message', {'id': request.sid, 'data': data}, broadcast=True)
+    emit('message', {'id': request.sid, 'data': data}, broadcast=True, to_room=data['room_id'], skip_sid=request.sid)
     return Response('OK')
 
 @socket_io.on('mutate')
-@cross_origin(headers='*', supports_credentials=True)
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def mutate(data):
-    emit('mutate', {'id': request.sid, 'roomID': data['roomID']}, broadcast=True)
+    emit('mutate', {'id': request.sid, 'roomID': data['roomID']}, broadcast=True, to_room=data['roomID'], skip_sid=request.sid)
     return Response('OK')
 
 # TODO: Add other routes
