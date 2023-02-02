@@ -10,3 +10,5 @@ RUN pip install -r /intera-app/requirements.txt
 COPY . /intera-app/
 
 WORKDIR /intera-app/
+
+CMD exec gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 4 --worker-connections=1000 --reload -b :$PORT app:app
