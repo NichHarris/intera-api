@@ -21,9 +21,8 @@ class Config(object):
     MAIL_USERNAME='apikey'
     MAIL_PASSWORD=env.get('SENDGRID_API_KEY')
     MAIL_DEFAULT_SENDER=env.get('MAIL_DEFAULT_SENDER')
-
 class Database(object):
-    client = MongoClient(f"mongodb://{env.get('USERNAME')}:{env.get('PASSWORD')}@{env.get('DATABASE_URL')}")
+    client = MongoClient(f"mongodb+srv://{env.get('USERNAME')}:{env.get('PASSWORD')}@{env.get('DATABASE_URL')}")
     intera_calls_db = 'intera_calls'
     intera_practice_db = 'intera_practice_db'
     rooms_collection = 'rooms'
