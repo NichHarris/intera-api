@@ -126,20 +126,24 @@ def resumable_upload(insert_request, title):
   retry = 0
   while response is None:
     print("Uploading file...")
-    status, response = insert_request.next_chunk()
-    if response is not None and 'id' in response:
-        print( "Video id '%s' was successfully uploaded." % response['id'])
-        json_file = {}
-        with open(UPLOAD_JSON, 'r') as f:
-            json_file = json.load(f)
+    try:
+      status, response = insert_request.next_chunk()
+      if response is not None and 'id' in response:
+          print( "Video id '%s' was successfully uploaded." % response['id'])
+          json_file = {}
+          with open(UPLOAD_JSON, 'r') as f:
+              json_file = json.load(f)
 
-        json_file[title] = f'{YOUTUBE_URL}{response["id"]}'
+          json_file[title] = f'{YOUTUBE_URL}{response["id"]}'
 
-        with open(UPLOAD_JSON, 'w') as top_words_file:
-          json.dump(json_file, top_words_file)
+          with open(UPLOAD_JSON, 'w') as top_words_file:
+            json.dump(json_file, top_words_file)
 
-    else:
-        exit("The upload failed with an unexpected response: %s" % response)
+      else:
+          exit("The upload failed with an unexpected response: %s" % response)
+    except:
+      print('end of limit')
+      exit()
 
     if error is not None:
       print(error)
