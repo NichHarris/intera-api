@@ -17,6 +17,7 @@ from auth0.v3.authentication import Users, GetToken, base
 from authlib.integrations.flask_oauth2 import ResourceProtector
 
 from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from flask_mail import Message
 
 import ssl
@@ -47,38 +48,56 @@ def create_room_id():
 
 
 @rooms.post('/email_invite')
-@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
-@auth.requires_auth
+# @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+# @auth.requires_auth
 def email_invite():
 
-    body = request.get_json(silent=True)
-    if body is None:
-        return jsonify(error='No body provided', status=400)
+    # body = request.get_json(silent=True)
+    # if body is None:
+    #     return jsonify(error=f'No body provided {request}', status=400)
 
-    room_id = body.get('room_id')
-    to_email = body.get('email')
+    # room_id = body.get('room_id')
+    # to_email = body.get('email')
+
+    room_id = request.args.get('room_id')
+    to_email = request.args.get('email')
     
     if room_id is None:
         return jsonify(error='Room ID not provided', status=400)
     if to_email is None:
         return jsonify(error='Email not provided', status=400)
 
-    token = auth.get_auth_token(request)
-    user_info = auth.decode_jwt(token)
+    # token = auth.get_auth_token(request)
+    # user_info = auth.decode_jwt(token)
 
-    from_email = user_info['email']
-    user_id = user_info['nickname']
+    # from_email = user_info['email']
+    # user_id = user_info['nickname']
+    invite_link = f'{Config.BASE_URL}/room/{room_id}'
 
     if to_email:
+        message = Mail(
+            from_email='harris.nicholas1998@gmail.com',
+            to_emails='harris.nicholas1998@gmail.com',
+            subject=f'Sending with Twilio SendGrid is Fun\n Invite link: {invite_link}',
+            html_content='<strong>and easy to do anywhere, even with Python</strong>')
+
+        try:
+            sg = SendGridAPIClient(env.get('MAIL_SENDGRID_API_KEY'))
+            response = sg.send(message)
+            print(response.status_code)
+            print(response.body)
+            print(response.headers)
+        except Exception as e:
+            print(e.message)
+
         # # TODO: Format
-        invite_link = f'{Config.BASE_URL}/room/{room_id}'
-        msg = Message('Twilio SendGrid Test Email', recipients=['harris.nicholas1998@gmail.com'], sender='harris.nicholas1998@gmail.com')
-        msg.body = 'This is a test email!'
-        msg.html = '<p>This is a test email!</p>'
+        # msg = Message('Twilio SendGrid Test Email', recipients=['harris.nicholas1998@gmail.com'], sender='harris.nicholas1998@gmail.com')
+        # msg.body = 'This is a test email!'
+        # msg.html = '<p>This is a test email!</p>'
     else:
         return jsonify(error='Email not provided', status=401)
 
-    mail.send(msg)
+    # mail.send(msg)
 
     return jsonify(message='success', data={'room_id': room_id, 'email_id': 0}, status=200)
 

@@ -2,6 +2,8 @@ import os
 import json
 YOUTUBE_URL = 'https://www.youtube.com/watch?v='
 
+DL_DIR = '../videos/'
+
 def format_word(word):
     word = word.strip()
     word = word.lower()
@@ -16,11 +18,37 @@ def format_json_data(json_data):
         for instance in data['instances']:
             if YOUTUBE_URL in instance['url']:
                 url = instance['url']
-                break
         
         if url:
             new_json_data[word] = url
     return new_json_data
+
+def download_yt_videos(indexfile, word, saveto=DL_DIR):
+    content = json.load(open(indexfile))
+    
+    if not os.path.exists(saveto):
+        os.mkdir(saveto)
+    
+    for entry in content:
+        if word == entry['gloss']:
+            instances = entry['instances']
+
+            for index, inst in enumerate(instances):
+                video_url = inst['url']
+                video_id = f'{word}_{index}'
+
+                if 'youtube' not in video_url and 'youtu.be' not in video_url:
+                    continue
+
+                if os.path.exists(os.path.join(saveto, video_id + '.mp4')) or os.path.exists(os.path.join(saveto, video_id + '.mkv')):
+                    continue
+                else:
+                    cmd = "yt-dlp \"{}\" -o \"{}\""
+                    cmd = cmd.format(video_url, f'{saveto}{video_id}.mp4')
+
+                    print(cmd)
+                    # exit()
+                    rv = os.system(cmd)
 
 if __name__ == '__main__':
     if not os.path.exists('words.txt'):
@@ -51,6 +79,9 @@ if __name__ == '__main__':
             if word in formatted_data:
                 top_words[word] = formatted_data[word]
                 word_count += 1
+
+                # download video
+                download_yt_videos('WLASL_DATA.json', word)
 
     with open('top_words.json', 'w') as top_words_file:
         json.dump(top_words, top_words_file)

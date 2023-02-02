@@ -44,6 +44,7 @@ def leave(data):
     username = data['username']
     
     # check if username is host -> if so, delete room
+    print('is host', rooms_api.is_host(room_id, username))
     if rooms_api.is_host(room_id, username):
         emit('close_room', {'data': f'Room {room_id} has been closed.'}, to=room_id, skip_sid=request.sid)
         close_room(room_id)
