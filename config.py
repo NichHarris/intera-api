@@ -24,7 +24,7 @@ class Config(object):
     MAIL_DEFAULT_SENDER=env.get('MAIL_DEFAULT_SENDER')
 
 class Database(object):
-    client = MongoClient(f"mongodb+srv://{env.get('USERNAME')}:{env.get('PASSWORD')}@{env.get('DATABASE_URL')}", tlsCAFile=certifi.where())
+    client = MongoClient(f"mongodb://{env.get('USERNAME')}:{env.get('PASSWORD')}@{env.get('DATABASE_URL')}", tlsCAFile=certifi.where())
     intera_calls_db = 'intera_calls'
     intera_practice_db = 'intera_practice_db'
     rooms_collection = 'rooms'
