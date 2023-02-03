@@ -16,12 +16,12 @@ class Config(object):
     AUTH0_CALLBACK_URL='http://localhost:5000/auth/callback'
     BASE_URL= env.get('BASE_URL') or 'http://localhost:5000'
     CLIENT_URL= env.get('CLIENT_URL') or 'http://localhost:3000'
-    MAIL_SERVER='smtp.sendgrid.net'
-    MAIL_PORT=587
-    MAIL_USE_TLS=True
-    MAIL_USERNAME='apikey'
-    MAIL_PASSWORD=env.get('SENDGRID_API_KEY')
-    MAIL_DEFAULT_SENDER=env.get('MAIL_DEFAULT_SENDER')
+    MAIL_SERVER= env.get('MAIL_SERVER') or 'smtp.gmail.com'
+    MAIL_PORT= env.get('MAIL_PORT') or 465
+    MAIL_USE_TLS= env.get('MAIL_USE_TLS') or False
+    MAIL_USE_SSL= env.get('MAIL_USE_SSL') or True
+    MAIL_USERNAME= env.get('MAIL_USERNAME') or ''
+    MAIL_PASSWORD= env.get('MAIL_PASSWORD') or ''
 class Database(object):
     client = MongoClient(f"mongodb+srv://{env.get('USERNAME')}:{env.get('PASSWORD')}@{env.get('DATABASE_URL')}")
     intera_calls_db = 'intera_calls'
