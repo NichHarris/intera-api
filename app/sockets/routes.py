@@ -21,9 +21,9 @@ def disconnect():
 
 @socket_io.on('join')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
-def join(data):    
-    user = data['user']
-    room_id = data['room_id']
+def join(data):
+    user = data['user'] if 'user' in data else ''
+    room_id = data['room_id'] if 'room_id' in data else ''
     join_room(room_id)
     emit('ready', {user: user}, to=room_id, skip_sid=request.sid)    
     return Response(f'{request.sid} has joined room id {room_id}.')
