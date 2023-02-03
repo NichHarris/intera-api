@@ -19,7 +19,7 @@ app.config['MAIL_SENDGRID_API_KEY'] = env.get("MAIL_SENDGRID_API_KEY")
 
 CORS(app, resources={r"/api/*": {"origins": f'{Config.BASE_URL}/*'}})
 
-socket_io = socketio.SocketIO(app, cors_allowed_origins=[f'http://localhost:3000'])
+socket_io = socketio.SocketIO(app, cors_allowed_origins=[f'{Config.CLIENT_URL}'])
 mail = MailSendGrid(app)
 
 # Register blueprints here

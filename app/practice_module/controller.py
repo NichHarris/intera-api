@@ -34,6 +34,9 @@ def create_word_entry(word, url, classified=True):
 def retrieve_random_word():
     # get random word from mongodb without using aggregate
     count = word_data.count_documents({'classified': True})
+
+    if count <= 0:
+        count = 1
     random_index = random.randint(0, count - 1)
     word = word_data.find({'classified': True}, {'_id': 0})[random_index]
 
