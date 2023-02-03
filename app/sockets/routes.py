@@ -21,9 +21,9 @@ def disconnect():
 
 @socket_io.on('join')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
-def join(data):    
-    user = data['user']
-    room_id = data['room_id']
+def join(data):
+    user = data['user'] if 'user' in data else ''
+    room_id = data['room_id'] if 'room_id' in data else ''
     join_room(room_id)
     emit('ready', {'user': user}, to=room_id, skip_sid=request.sid)
     return Response(f'{request.sid} has joined room id {room_id}.')
@@ -31,12 +31,13 @@ def join(data):
 @socket_io.on('leave')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def leave(data):
-    room_id = data['room_id']
-    user = data['user']
+    room_id = data['room_id'] if 'room_id' in data else ''
+    user = data['user'] if 'user' in data else ''
     
     # check if username is host -> if so, delete room
     if rooms_api.is_host(room_id, user):
         emit('close_room', {'data': f'Room {room_id} has been closed.'}, to=room_id, skip_sid=request.sid)
+        rooms_api.update_room_status(room_id, False)
         close_room(room_id)
     else:
         emit('disconnect', {'data': f'{request.sid} has left the room id: {room_id}.', 'user_sid': request.sid}, to=room_id)
