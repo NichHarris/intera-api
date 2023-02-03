@@ -20,7 +20,7 @@ app.config['MAIL_SERVER'] = Config.MAIL_SERVER
 app.config['MAIL_PORT'] = Config.MAIL_PORT
 app.config['MAIL_USERNAME'] = Config.MAIL_USERNAME
 app.config['MAIL_PASSWORD'] = Config.MAIL_PASSWORD
-app.config['MAIL_USE_TLS'] = Config.MAIL_USE_TLS
+# app.config['MAIL_USE_TLS'] = Config.MAIL_USE_TLS
 app.config['MAIL_USE_SSL'] = Config.MAIL_USE_SSL
 
 CORS(app, resources={r"/api/*": {"origins": [f'{Config.BASE_URL}/*', {'http://localhost:3000'}] }})
