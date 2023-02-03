@@ -70,7 +70,6 @@ def email_invite():
     from_email = user_info['email']
     user_id = user_info['nickname']
 
-
     if to_email:
         invite_link = f'{Config.CLIENT_URL}/room/{room_id}'
 
@@ -89,7 +88,6 @@ def email_invite():
             return jsonify(error=f'Email not sent to {to_email} because\n {e}', status=400)
     else:
         return jsonify(error='Email not provided', status=403)
-
 
     return jsonify(message='success', data={'room_id': room_id, 'email_id': 0}, status=200)
 
