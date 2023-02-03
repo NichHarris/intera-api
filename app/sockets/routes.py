@@ -59,6 +59,6 @@ def mutate(data):
 @socket_io.on('data_transfer')
 def data_transfer(data):
     room_id = data['room_id']
-    body = body['body']
+    body = data['body']
     emit('data', body, to=room_id, skip_sid=request.sid)
     return Response(f'Transferred data for room {room_id}')
