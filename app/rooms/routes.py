@@ -79,8 +79,10 @@ def email_invite():
             sender_email = Config.MAIL_USERNAME
             receiver_email = to_email
             password = Config.MAIL_PASSWORD
-            message = f'You have been invited to a room!\n\nUser {user_id} wants to join their meeting room!\n\nPlease join via this link: {invite_link} or by entering the join code: {room_id} \n\nThank you for using Intera!'
-
+            message = f'''... From: {sender_email}
+                          ... Subject: You have been invited to a room! - Intera...
+                          ...
+                          ... You have been invited to a room!\n\nUser {user_id} wants to join their meeting room!\n\nPlease join via this link: {invite_link}\n\n Alternatively access this link {Config.CLIENT_URL} and access by entering the join code: {room_id} \n\nThank you for using Intera!'''
             context = ssl.create_default_context()
             with smtplib.SMTP(smtp_server, port) as server:
                 server.ehlo()  # Can be omitted
