@@ -6,6 +6,7 @@ from app import mail
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from config import Config, parse_json
+import smtplib, ssl
 
 from flask_cors import CORS, cross_origin
 from flask import render_template, session, redirect, url_for, request, jsonify, Response
@@ -69,17 +70,34 @@ def email_invite():
     from_email = user_info['email']
     user_id = user_info['nickname']
 
+
     if to_email:
         invite_link = f'{Config.BASE_URL}/room/{room_id}'
-
-        msg = Message(subject='You have been invited to a room! - Intera',
-                        sender=Config.MAIL_USERNAME,
-                        recipients=[to_email],
-                        body=f'You have been invited to a room!\n\nUser {user_id} wants to join their meeting room!\n\nPlease join via this link: {invite_link} or by entering the join code: {room_id} \n\nThank you for using Intera!')
-        
         try:
-            with mail.connect() as conn:
-                conn.send(msg)
+            port = 587 # For starttls 587
+            smtp_server = Config.MAIL_SERVER
+            sender_email = Config.MAIL_USERNAME
+            receiver_email = to_email
+            password = Config.MAIL_PASSWORD
+            message = f'You have been invited to a room!\n\nUser {user_id} wants to join their meeting room!\n\nPlease join via this link: {invite_link} or by entering the join code: {room_id} \n\nThank you for using Intera!'
+
+            context = ssl.create_default_context()
+            with smtplib.SMTP(smtp_server, port) as server:
+                server.ehlo()  # Can be omitted
+                server.starttls(context=context)
+                server.ehlo()  # Can be omitted
+                server.login(sender_email, password)
+                server.sendmail(sender_email, receiver_email, message)
+
+
+        # msg = Message(subject='You have been invited to a room! - Intera',
+        #                 sender=Config.MAIL_USERNAME,
+        #                 recipients=[to_email],
+        #                 body=f'You have been invited to a room!\n\nUser {user_id} wants to join their meeting room!\n\nPlease join via this link: {invite_link} or by entering the join code: {room_id} \n\nThank you for using Intera!')
+        
+        # try:
+        #     with mail.connect() as conn:
+        #         conn.send(msg)
         except Exception as e:
             return jsonify(error=f'Email not sent to {to_email} because\n {e}', status=400)
     else:
