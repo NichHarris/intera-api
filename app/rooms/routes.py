@@ -70,7 +70,6 @@ def email_invite():
     user_id = user_info['nickname']
 
     if to_email:
-        # # TODO: Format
         invite_link = f'{Config.BASE_URL}/room/{room_id}'
 
         msg = Message(subject='You have been invited to a room! - Intera',
@@ -82,7 +81,7 @@ def email_invite():
             with mail.connect() as conn:
                 conn.send(msg)
         except Exception as e:
-            return jsonify(error=f'Email not sent to {to_email}', status=400)
+            return jsonify(error=f'Email not sent to {to_email} because\n {e}', status=400)
     else:
         return jsonify(error='Email not provided', status=403)
 
