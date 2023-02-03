@@ -16,7 +16,7 @@ def connect():
 @socket_io.on('disconnect')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def disconnect():
-    emit('disconnect', {'data': f'User {request.sid} disconnected'})
+    emit('disconnect', {'data': f'User {request.sid} disconnected'}, skip_sid=request.sid)
     return Response('Client disconnected')
 
 @socket_io.on('join')
@@ -25,7 +25,7 @@ def join(data):
     user = data['user']
     room_id = data['room_id']
     join_room(room_id)
-    emit('ready', {user: user}, to=room_id, skip_sid=request.sid)    
+    emit('ready', {'user': user}, to=room_id, skip_sid=request.sid)
     return Response(f'{request.sid} has joined room id {room_id}.')
 
 @socket_io.on('leave')
@@ -56,8 +56,13 @@ def mutate(data):
     return Response('OK')
 
 @socket_io.on('data_transfer')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def data_transfer(data):
     room_id = data['room_id']
-    body = body['body']
-    emit('data', body, to=room_id, skip_sid=request.sid)
+    body = data['body']
+    emit('data_transfer', body, to=room_id, skip_sid=request.sid)
     return Response(f'Transferred data for room {room_id}')
+
+@socket_io.on_error_default
+def default_error_handler(e):
+    socket_io.stop()
