@@ -73,17 +73,16 @@ def email_invite():
         # # TODO: Format
         invite_link = f'{Config.BASE_URL}/room/{room_id}'
 
-
         msg = Message(subject='You have been invited to a room! - Intera',
                         sender=Config.MAIL_USERNAME,
                         recipients=[to_email],
                         body=f'You have been invited to a room!\n\nUser {user_id} wants to join their meeting room!\n\nPlease join via this link: {invite_link} or by entering the join code: {room_id} \n\nThank you for using Intera!')
         
         try:
-            mail.send(msg)
+            with mail.connect() as conn:
+                conn.send(msg)
         except Exception as e:
-            print(e)
-            return jsonify(error='Email not sent', status=400)
+            return jsonify(error=f'Email not sent to {to_email}', status=400)
     else:
         return jsonify(error='Email not provided', status=403)
 
