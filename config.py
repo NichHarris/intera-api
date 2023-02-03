@@ -17,7 +17,7 @@ class Config(object):
     BASE_URL= env.get('BASE_URL') or 'http://localhost:5000'
     CLIENT_URL= env.get('CLIENT_URL') or 'http://localhost:3000'
     MAIL_SERVER= env.get('MAIL_SERVER') or 'smtp.gmail.com'
-    MAIL_PORT= env.get('MAIL_PORT') or 465
+    MAIL_PORT= env.get('MAIL_PORT') or 587
     MAIL_USE_TLS= env.get('MAIL_USE_TLS') or False
     MAIL_USE_SSL= env.get('MAIL_USE_SSL') or True
     MAIL_USERNAME= env.get('MAIL_USERNAME') or ''

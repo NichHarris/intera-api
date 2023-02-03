@@ -16,7 +16,14 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.secret_key = APP_SECRET_KEY
 
-CORS(app, resources={r"/api/*": {"origins": f'{Config.BASE_URL}/*'}})
+app.config['MAIL_SERVER'] = Config.MAIL_SERVER
+app.config['MAIL_PORT'] = Config.MAIL_PORT
+app.config['MAIL_USERNAME'] = Config.MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = Config.MAIL_PASSWORD
+app.config['MAIL_USE_TLS'] = Config.MAIL_USE_TLS
+app.config['MAIL_USE_SSL'] = Config.MAIL_USE_SSL
+
+CORS(app, resources={r"/api/*": {"origins": [f'{Config.BASE_URL}/*', {'http://localhost:3000'}] }})
 
 socket_io = socketio.SocketIO(app, cors_allowed_origins=[f'{Config.CLIENT_URL}'])
 mail = Mail(app)
