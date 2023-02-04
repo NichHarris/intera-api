@@ -53,7 +53,7 @@ def message(data):
 @socket_io.on('mutate')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def mutate(data):
-    emit('mutate', {'id': request.sid, 'roomID': data['roomID']}, broadcast=True, to_room=data['roomID'], skip_sid=request.sid)
+    emit('mutate', {'id': request.sid, 'roomID': data['roomID']}, broadcast=True, to_room=data['roomID'])
     return Response('OK')
 
 @socket_io.on('data_transfer')
