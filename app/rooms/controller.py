@@ -35,7 +35,7 @@ def create_room(room_id, user_id, host_type):
     room = {'room_id': room_id, 'users': [user_id], 'host_type': host_type, 'date_created': datetime.now(), 'active': True, 'messages': []}
     
     try:
-        result = rooms.insert_one(room)
+        result = rooms.insert_one(room) 
     except errors.DuplicateKeyError as err:
         return (err.code, err._message)
     except errors.PyMongoError as err:
