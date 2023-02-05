@@ -55,5 +55,5 @@ def mutate(data):
 def data_transfer(data):
     room_id = data['room_id']
     body = data['body']
-    emit('data_transfer', body, to=room_id, skip_sid=request.sid)
+    emit('data_transfer', body, broadcast=True, to=room_id, skip_sid=request.sid)
     return Response(f'Transferred data for room {room_id}')
