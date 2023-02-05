@@ -1,3 +1,4 @@
+import requests
 from config import Database
 from pymongo import errors, results
 from bson.json_util import dumps
@@ -22,13 +23,12 @@ except errors.CollectionInvalid as err:
 
 # generate a random room_id using the uuid library
 def generate_room_id():
-    # Get 8 digits of the uuid
-    random_id = str(uuid.uuid4())[:8]
+    # Get the roomName from Metered
+    r = requests.post("https://" + env.get('METERED_DOMAIN') + "/api/v1/room" + "?secretKey="+ env.get('METERED_SECRET_KEY'))
+    data = r.json()
+    room_id = data.get("roomName")
 
-    while rooms.count_documents({'room_id': random_id}) != 0:
-        random_id = str(uuid.uuid4())[:8]
-
-    return random_id
+    return room_id
 
 
 def create_room(room_id, user_id, host_type):
