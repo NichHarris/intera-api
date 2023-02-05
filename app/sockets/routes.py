@@ -35,26 +35,19 @@ def leave(data):
     user = data['user'] if 'user' in data else ''
     
     # check if username is host -> if so, delete room
-    if rooms_api.is_host(room_id, user):
-        emit('close_room', {'data': f'Room {room_id} has been closed.'}, broadcast=True, to=room_id, skip_sid=request.sid)
-        rooms_api.update_room_status(room_id, False)
-        close_room(room_id)
-    else:
-        emit('disconnect', {'data': f'{user} has left the room id: {room_id}.', 'user_sid': request.sid}, broadcast=True, to=room_id)
+    emit('disconnect', {'data': f'{user} has left the room id: {room_id}.', 'user_sid': request.sid}, broadcast=True, to=room_id, skip_sid=request.sid)
     leave_room(room_id)
     return Response('OK')
 
 @socket_io.on('message')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def message(data):
-    print('message', data, request.sid)
     emit('message', {'id': request.sid, 'data': data}, broadcast=True, to_room=data['room_id'], skip_sid=request.sid)
     return Response('OK')
 
 @socket_io.on('mutate')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def mutate(data):
-    print('mutate', data, request.sid)
     emit('mutate', {'id': request.sid, 'roomID': data['roomID']}, broadcast=True, to_room=data['roomID'], skip_sid=request.sid)
     return Response('OK')
 
