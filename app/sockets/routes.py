@@ -36,11 +36,11 @@ def leave(data):
     
     # check if username is host -> if so, delete room
     if rooms_api.is_host(room_id, user):
-        emit('close_room', {'data': f'Room {room_id} has been closed.'}, to=room_id, skip_sid=request.sid)
+        emit('close_room', {'data': f'Room {room_id} has been closed.'}, broadcast=True, to=room_id, skip_sid=request.sid)
         rooms_api.update_room_status(room_id, False)
         close_room(room_id)
     else:
-        emit('disconnect', {'data': f'{request.sid} has left the room id: {room_id}.', 'user_sid': request.sid}, to=room_id)
+        emit('disconnect', {'data': f'{user} has left the room id: {room_id}.', 'user_sid': request.sid}, broadcast=True, to=room_id)
     leave_room(room_id)
     return Response('OK')
 
