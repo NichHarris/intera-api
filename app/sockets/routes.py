@@ -24,7 +24,8 @@ def disconnect():
 def join(data):
     user = data['user'] if 'user' in data else ''
     room_id = data['room_id'] if 'room_id' in data else ''
-    emit('ready', {user: user}, to=room_id, skip_sid=request.sid)    
+
+    emit('ready', {'user': user}, to=room_id, skip_sid=request.sid)    
     join_room(room_id)
     return Response(f'{request.sid} has joined room id {room_id}.')
 
