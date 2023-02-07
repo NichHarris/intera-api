@@ -37,7 +37,7 @@ def create_room_id():
     user_info = auth.decode_jwt(token)
     print(user_info)
 
-    invite_link = f'{Config.BASE_URL}/room/{room_id}'
+    invite_link = f'{Config.CLIENT_URL}/call-page/{room_id}'
 
     res = {
         'room_id': room_id,
@@ -71,7 +71,7 @@ def email_invite():
     user_id = user_info['nickname']
 
     if to_email:
-        invite_link = f'{Config.CLIENT_URL}/room/{room_id}'
+        invite_link = f'{Config.CLIENT_URL}/call-page/{room_id}'
 
         try:
             msg = Message(subject='You have been invited to a room! - Intera',
