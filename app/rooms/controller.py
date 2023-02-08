@@ -78,11 +78,11 @@ def register_user_in_room(room_id, user_id):
 
     room_users = room['users']
 
-    if len(room_users) == 2:
-        return (0, 'Room is full')
+    if user_id in room_users:
+        return (1, 'User already registered in room')
     else:
-        if user_id in room_users:
-            return (0, 'User already registered in room')
+        if len(room_users) >= 2:
+            return (0, 'Room is full')
 
         room_users.append(user_id)
 
