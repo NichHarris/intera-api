@@ -96,7 +96,6 @@ def register_user_in_room(room_id, user_id):
 
 def get_room(room_id):
     try:
-        # room = rooms.find_one({'room_id': room_id}, {'_id': 0})
         exists = rooms.find_one({'room_id': room_id})
         
         if exists is None:
