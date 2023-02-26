@@ -1,5 +1,5 @@
 from app import socket_io
-from flask_socketio import emit, join_room, leave_room, close_room, disconnect, send
+from flask_socketio import emit, join_room, leave_room, close_room, disconnect, send, rooms
 from flask import request, Response
 from flask_cors import cross_origin
 
@@ -24,9 +24,12 @@ def disconnect():
 def join(data):
     user = data['user'] if 'user' in data else ''
     room_id = data['room_id'] if 'room_id' in data else ''
+    rooms_api.update_room_status(room_id, True)
 
-    emit('ready', {'user': user}, to=room_id, skip_sid=request.sid)    
     join_room(room_id)
+    print(f'Joining room {room_id} with user {user} sid: {request.sid}')
+    emit('pong', {'join': room_id, 'rooms': rooms()}, broadcast=True, to=room_id)
+    emit('ready', broadcast=True, to=room_id, skip_sid=request.sid)   
     return Response(f'{request.sid} has joined room id {room_id}.')
 
 @socket_io.on('leave')
@@ -40,10 +43,23 @@ def leave(data):
     leave_room(room_id)
     return Response('OK')
 
+@socket_io.on('ping')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+def ping(data):
+    room_id = data['room_id'] if 'room_id' in data else ''
+    emit('pong', {'test': room_id}, broadcast=True, to=room_id)
+    return Response('OK')
+
 @socket_io.on('message')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def message(data):
     emit('message', {'id': request.sid, 'data': data}, broadcast=True, to_room=data['room_id'], skip_sid=request.sid)
+    return Response('OK')
+
+@socket_io.on('ready')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+def message(data):
+    emit('ready', {'id': request.sid, 'data': data}, broadcast=True, to_room=data['room_id'], skip_sid=request.sid)
     return Response('OK')
 
 @socket_io.on('mutate')
@@ -55,6 +71,6 @@ def mutate(data):
 @socket_io.on('data_transfer')
 def data_transfer(data):
     room_id = data['room_id']
-    #emit('data_transfer', data['body'], to=room_id, skip_sid=request.sid)
+    # emit('data_transfer', data['body'], to=room_id, skip_sid=request.sid)
     emit('data_transfer', data, to=room_id, skip_sid=request.sid)
     return Response(f'Transferred data for room {room_id}')
