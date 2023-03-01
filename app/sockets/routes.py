@@ -10,7 +10,7 @@ from app.auth import controller as auth
 @socket_io.on('connect')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def connect():
-    emit('connect', {'data': f'User {request.sid} connected'}, skip_sid=request.sid)
+    emit('connect',  {'test': 'test'})
     return Response('Client connected')
 
 @socket_io.on('disconnect')

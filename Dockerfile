@@ -11,4 +11,4 @@ COPY . /intera-app/
 
 WORKDIR /intera-app/
 
-CMD exec gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 4 --worker-connections=1000 --timeout 300 --reload -b :$PORT app:app
+CMD exec gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --worker-connections=1000 --timeout 300 --reload -b :$PORT app:app
