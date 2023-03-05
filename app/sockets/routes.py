@@ -74,3 +74,11 @@ def data_transfer(data):
     # emit('data_transfer', data['body'], to=room_id, skip_sid=request.sid)
     emit('data_transfer', data, to=room_id, skip_sid=request.sid)
     return Response(f'Transferred data for room {room_id}')
+
+@socket_io.on('stream_buffer')
+def stream_buffer(data):
+    room_id = data['room_id']
+
+    # Testing
+    emit('stream_buffer_response', data)
+    return Response(f'Received stream buffer data for room {room_id}')

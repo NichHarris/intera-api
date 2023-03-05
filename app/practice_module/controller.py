@@ -120,3 +120,16 @@ def delete_attempted_word(word, user_id):
             return (1, f'Word attempt {word} deleted successfully')
     
     return (0, f'Word attempt {word} not found')
+
+
+def process_attempt(word, video):
+    success, prediction, accuracy = 1, 'hello', 0.93 # Call to process video here
+
+    result = 'Incorrect'
+    if prediction == word:
+        result = 'Correct'
+
+    if success == 0:
+        return (0, f'Unable to process sign attempt', result, accuracy)
+    
+    return (1, f'Sign attempt processed successfully', result, accuracy)
