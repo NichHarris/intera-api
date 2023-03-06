@@ -114,25 +114,23 @@ def update_word_classification():
     else:
         return jsonify(message=message, status=200)
 
+@practice_module.post('/submit_answer')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+@auth.requires_auth
+def submit_answer():
+    video = request.files.get('video', None)
+    if video is not None:
+        video = video.read()
+    else:
+        return jsonify(error='No video provided', status=400)
 
-#####################
-# SocketIO Handlers #
-#####################
+    word = request.form.get('word', None)
+    if word is None:
+        return jsonify(error='No word provided', status=400)
 
-# from flask_socketio import SocketIO, emit, join_room, namespace
-# from app import create_app
+    status, message, result, accuracy = practice_api.process_attempt(word, video)
 
-# # Not sure about this
-# socket_io = SocketIO(create_app())
-
-# NAMESPACE = '/practice_module'
-
-# @socket_io.on('start_recording', namespace=NAMESPACE)
-# def start_recording(data):
-#     room_id = data['room_id']
-#     user_id = data['user_id']
-
-# @socket_io.on('stop_recording', namespace=NAMESPACE)
-# def stop_recording(data):
-#     room_id = data['room_id']
-#     user_id = data['user_id']
+    if status == 0:
+        return jsonify(error=message, status=401)
+    else:
+        return jsonify(message=message, data={'word': word, 'result': result, 'accuracy': accuracy}, status=200)
