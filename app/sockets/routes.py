@@ -37,9 +37,12 @@ def join(data):
 def leave(data):
     room_id = data['room_id'] if 'room_id' in data else ''
     user = data['user'] if 'user' in data else ''
-    
-    # check if username is host -> if so, delete room
+    print(f'Leaving room {room_id} with user {user} sid: {request.sid}')
     emit('disconnect', {'data': f'{user} has left the room id: {room_id}.', 'user_sid': request.sid}, broadcast=True, to=room_id, skip_sid=request.sid)
+    if rooms_api.is_host(user, room_id):
+        emit('leave', {'data': f'{user} has closed room: {room_id}.', 'user_sid': request.sid}, broadcast=True, to=room_id)
+
+    # check if username is host -> if so, delete room
     leave_room(room_id)
     return Response('OK')
 
