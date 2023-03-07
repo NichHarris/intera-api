@@ -24,7 +24,6 @@ def disconnect():
 def join(data):
     user = data['user'] if 'user' in data else ''
     room_id = data['room_id'] if 'room_id' in data else ''
-    rooms_api.update_room_status(room_id, True)
 
     join_room(room_id)
     print(f'Joining room {room_id} with user {user} sid: {request.sid}')
@@ -37,20 +36,15 @@ def join(data):
 def leave(data):
     room_id = data['room_id'] if 'room_id' in data else ''
     user = data['user'] if 'user' in data else ''
+
     print(f'Leaving room {room_id} with user {user} sid: {request.sid}')
     emit('disconnect', {'data': f'{user} has left the room id: {room_id}.', 'user_sid': request.sid}, broadcast=True, to=room_id, skip_sid=request.sid)
-    if rooms_api.is_host(user, room_id):
-        emit('leave', {'data': f'{user} has closed room: {room_id}.', 'user_sid': request.sid}, broadcast=True, to=room_id)
 
-    # check if username is host -> if so, delete room
+    # if rooms_api.is_host(user, room_id):
+    #     print('Host has left the room. Closing room.')
+    emit('leave', {'user': user, 'user_sid': request.sid}, broadcast=True, to=room_id)
+
     leave_room(room_id)
-    return Response('OK')
-
-@socket_io.on('ping')
-@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
-def ping(data):
-    room_id = data['room_id'] if 'room_id' in data else ''
-    emit('pong', {'test': room_id}, broadcast=True, to=room_id)
     return Response('OK')
 
 @socket_io.on('message')
