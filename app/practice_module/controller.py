@@ -55,6 +55,18 @@ def get_word_video_url(word):
     return (0, 'Unable to find word {word}', None)
 
 
+def set_word_video_url(word, url):
+    result = word_data.update_one({'word': word}, {'$set': {'url': url}})
+
+    if isinstance(result, results.UpdateResult):
+        if result.matched_count == 1:
+            return (1, f'Word {word} updated successfully')
+        else:
+            return (0, f'Word {word} not found')
+    
+    return (0, f'Error updating word {word}')
+
+
 def set_classified_status(word, classified):
     result = word_data.update_one({'word': word}, {'$set': {'classified': classified}})
 

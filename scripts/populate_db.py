@@ -203,7 +203,24 @@ def populate_words_db(count: int):
     else:
         print("Top words file does not exist.")
 
+def update_urls():
+    if os.path.exists('top_words.json'):
+        with open('top_words.json', 'r') as file:
+            top_words = json.load(file)
 
+            words = top_words.keys()
+            code = 0
+            message = ''
+            for i, word in enumerate(words):
+                url = top_words[word]
+                code, message = practice_api.set_word_video_url(word, url)
+
+                if code != 1:
+                    print(message)
+                else:
+                    print(f'Word {word} url updated')
+    else:
+        print("Top words file does not exist.")
 
 if __name__ == "__main__":
     print("--------------------------------------------------------------------------------------")
@@ -220,6 +237,8 @@ if __name__ == "__main__":
 
     parser.add_argument('--default', '-d', action='store_true', help='Default script run')
     
+    parser.add_argument('--urls', '-us', action='store_true', help='Update urls for videos')
+
     args = parser.parse_args()
 
     if args.file:
@@ -232,6 +251,9 @@ if __name__ == "__main__":
 
     if args.words:
         populate_words_db(args.words)
+
+    if args.urls:
+        update_urls()
 
     if args.default:
         print("Default script run.")

@@ -1,9 +1,12 @@
 {
   "bad": "https://www.youtube.com/embed/BUhCGlNOqRA", 
   "want": "https://www.youtube.com/embed/co7zdtkJW1E", 
+  "please": "https://www.youtube.com/embed/QyqHzUY36cw", 
   "yes": "https://www.youtube.com/embed/-on_5PoBEak", 
   "you": "https://www.youtube.com/embed/K9m1pAFMqyw", 
+  "she": "https://youtube.com/embed/MUHD55E_6R4?loop=1",
   "why": "https://www.youtube.com/embed/-iJt0VZWBcA",
+  "sad": "https://www.youtube.com/embed/PF4sePzDILY", 
   "thank you": "https://youtube.com/embed/O5Tv5KT1VLs?loop=1",
   "hello": "https://www.youtube.com/embed/DYjjcoTkNa0", 
   "more": "https://www.youtube.com/embed/tPDGvZK_o_c", 
@@ -236,7 +239,6 @@
   "out": "https://www.youtube.com/embed/l9DEEvJt5NY", 
   "people": "https://www.youtube.com/embed/G_g11mm-iRY", 
   "plan": "https://www.youtube.com/embed/pvDfBvY2-Sc", 
-  "please": "https://www.youtube.com/embed/QyqHzUY36cw", 
   "practice": "https://www.youtube.com/embed/kjl2RGCNX3k", 
   "prefer": "https://www.youtube.com/embed/zLzdb5vrdds", 
   "question": "https://www.youtube.com/embed/9V46myo_zWA", 
@@ -246,7 +248,6 @@
   "rest": "https://www.youtube.com/embed/hfm2K1_ueP0", 
   "right": "https://www.youtube.com/embed/e1RF5h4OgOg", 
   "run": "https://www.youtube.com/embed/eLu4zVJhTqU", 
-  "sad": "https://www.youtube.com/embed/PF4sePzDILY", 
   "same": "https://www.youtube.com/embed/cnX45VWbjmc", 
   "say": "https://www.youtube.com/embed/fka6bGd2TX8", 
   "school": "https://www.youtube.com/embed/ig7SKr3tvWc", 
@@ -308,7 +309,6 @@
   "come": "https://youtube.com/embed/-4r8dD8sLyY?loop=1",
   "make": "https://youtube.com/embed/XkytS0FE920?loop=1",
   "near": "https://youtube.com/embed/bTb4ah4xJlw?loop=1",
-  "she": "https://youtube.com/embed/MUHD55E_6R4?loop=1",
   "take": "https://youtube.com/embed/naBjYneD9Rw?loop=1",
   "try": "https://youtube.com/embed/oklkwhoS1hc?loop=1"
 }
