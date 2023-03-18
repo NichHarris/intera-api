@@ -1,8 +1,12 @@
-from config import Database
+# Database
 from pymongo import errors, results
 
+# Environment variables
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
+from config import Database
+
+# Utilities
 from datetime import datetime
 
 # load the environment variables from the .env file

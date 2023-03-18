@@ -1,11 +1,14 @@
+# Database
 from config import Database
 from pymongo import errors, results
-from bson.json_util import dumps
+
+# Environment variables
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
+
+# Utilities
 from datetime import datetime
 import uuid
-import certifi
 
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())

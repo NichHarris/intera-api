@@ -1,32 +1,32 @@
+# API
 from app.rooms import rooms
 from app.rooms import controller as rooms_api
 from app.transcripts import controller as transcripts_api
 import app.auth.controller as auth
-from app import mail
+
+# Environment variables
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from config import Config, parse_json
-import smtplib, ssl
 
+# Flask
 from flask_cors import CORS, cross_origin
-from flask import render_template, session, redirect, url_for, request, jsonify, Response
-# from flask_socketio import SocketIO, emit, join_room, namespace, leave_room, send, disconnect
+from flask import request, jsonify
 import flask_socketio as socketio
-# import socketIO_client as socketio
 
+# Auth0
 from auth0.v3.authentication import Users, GetToken, base
 from authlib.integrations.flask_oauth2 import ResourceProtector
 
-from sendgrid import SendGridAPIClient
+# Mail
 from flask_mail import Message
+import smtplib, ssl
 
-import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())
 CORS(rooms, resources={r"/*": {"origins": f'{Config.BASE_URL}/*'}})
-
 
 @rooms.get('/create_room_id')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)

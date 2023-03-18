@@ -1,11 +1,8 @@
+# Flask and Sockets
 from app import socket_io
-from flask_socketio import emit, join_room, leave_room, close_room, disconnect, send, rooms
+from flask_socketio import emit, join_room, leave_room, rooms
 from flask import request, Response
 from flask_cors import cross_origin
-
-from app.rooms import controller as rooms_api
-from app.transcripts import controller as transcripts_api
-from app.auth import controller as auth
 
 @socket_io.on('connect')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)

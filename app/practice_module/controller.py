@@ -1,5 +1,8 @@
+# Database
+from pymongo import errors, results
 from config import Database
-from pymongo import errors, results, cursor
+
+# Utilities
 import random
 from datetime import datetime
 

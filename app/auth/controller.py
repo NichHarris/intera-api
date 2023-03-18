@@ -1,11 +1,18 @@
+# Environment variables
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
-from functools import wraps
-from six.moves.urllib.request import urlopen
+
+# Flask
 from flask import _request_ctx_stack, request, jsonify
+
+# Auth0
 from jose import jwt, ExpiredSignatureError
-import json
+
+# Utilities
+from functools import wraps
 import http.client
+from six.moves.urllib.request import urlopen
+import json
 
 load_dotenv(find_dotenv())
 AUTH0_CLIENT_SECRET = env.get('AUTH0_CLIENT_SECRET')

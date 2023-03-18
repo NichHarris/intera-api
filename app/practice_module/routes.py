@@ -1,16 +1,16 @@
+# API
 from app.practice_module import practice_module
 from app.practice_module import controller as practice_api
 import app.auth.controller as auth
 
+# Environment variables
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from config import Config
 
+# Flask
 from flask_cors import CORS, cross_origin
-from flask import render_template, session, redirect, url_for, request, jsonify, Response
-
-from auth0.v3.authentication import Users, GetToken
-from authlib.integrations.flask_oauth2 import ResourceProtector
+from flask import request, jsonify
 
 # load the environment variables from the .env file
 load_dotenv(find_dotenv())

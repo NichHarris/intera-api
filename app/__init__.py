@@ -1,17 +1,18 @@
+# Environment variables
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
-from flask import Flask
-from flask_mail import Mail, Message
 from config import Config
-import flask_socketio as socketio
 
+# Flask
+from flask import Flask
+from flask_mail import Mail
 from flask_cors import CORS
+import flask_socketio as socketio
 
 # load .env file
 load_dotenv(find_dotenv())
 
 APP_SECRET_KEY = env.get("APP_SECRET_KEY")
-# def create_app():
 app = Flask(__name__)
 app.config.from_object(Config)
 app.secret_key = APP_SECRET_KEY
@@ -20,7 +21,6 @@ app.config['MAIL_SERVER'] = Config.MAIL_SERVER
 app.config['MAIL_PORT'] = Config.MAIL_PORT
 app.config['MAIL_USERNAME'] = Config.MAIL_USERNAME
 app.config['MAIL_PASSWORD'] = Config.MAIL_PASSWORD
-# app.config['MAIL_USE_TLS'] = Config.MAIL_USE_TLS
 app.config['MAIL_USE_SSL'] = Config.MAIL_USE_SSL
 
 CORS(app, resources={r"/api/*": {"origins": [f'{Config.BASE_URL}/*', {'http://localhost:3000'}] }})
@@ -37,9 +37,6 @@ app.register_blueprint(transcripts, url_prefix='/api/transcripts')
 
 from app.practice_module import practice_module
 app.register_blueprint(practice_module, url_prefix='/api/practice')
-
-from app.neural_net import neural_net
-app.register_blueprint(neural_net, url_prefix='/api/neural_net')
 
 from app.auth import auth
 app.register_blueprint(auth, url_prefix='/api/auth')
