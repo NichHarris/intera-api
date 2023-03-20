@@ -17,6 +17,10 @@ import json
 load_dotenv(find_dotenv())
 AUTH0_CLIENT_SECRET = env.get('AUTH0_CLIENT_SECRET')
 
+# **************************Auth0 Source***************************
+# https://auth0.com/docs/quickstart/backend/python/01-authorization
+# *****************************************************************
+
 def get_auth_token(request=request):
     auth = request.headers.get('Authorization', None)
     token = auth.split(' ')[1] if auth else None

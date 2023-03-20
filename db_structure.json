@@ -1,35 +1,37 @@
 {
+
+
     "rooms": {
-    "_id": "ObjectId",
-    "room_id": "String",
-    "users": "Array",
-    "host_type": "String",
-    "date_created": "Date",
-    "active": "Boolean",
-    "messages": [
-        {
-            "message": { "type": "String", "ref": "message" }
-        }
-    ]
+        "_id": "ObjectId",
+        "room_id": "String",
+        "users": "Array",
+        "host_type": "String",
+        "date_created": "Date",
+        "active": "Boolean",
+        "messages": [
+            {
+                "message": { "type": "String", "ref": "message" }
+            }
+        ]
     },
 
     "message": {
-    "_id": "ObjectId",
-    "room_id": "String",
-    "date_created": "Date",
-    "to": "String",
-    "from": "String",
-    "text": "String",
-    "edited": "Boolean",
-    "message_type": "String",
-    "corrected": "String" 
+        "_id": "ObjectId",
+        "room_id": "String",
+        "date_created": "Date",
+        "to": "String",
+        "from": "String",
+        "text": "String",
+        "edited": "Boolean",
+        "message_type": "String",
+        "corrected": "String" 
     },
 
     "word_entry": {
-    "_id": "ObjectId",
-    "word": "String",
-    "url": "String",
-    "classified": "Boolean" 
+        "_id": "ObjectId",
+        "word": "String",
+        "url": "String",
+        "classified": "Boolean" 
     }
 }
 
