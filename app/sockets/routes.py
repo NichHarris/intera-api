@@ -47,19 +47,23 @@ def leave(data):
 @socket_io.on('message')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def message(data):
-    emit('message', {'id': request.sid, 'data': data}, broadcast=True, to_room=data['room_id'], skip_sid=request.sid)
+    room_id = data['room_id'] if 'room_id' in data else ''
+    join_room(room_id)
+    emit('mutate', {'id': request.sid, 'data': data}, broadcast=True, to_room=data['room_id'], skip_sid=request.sid)
     return Response('OK')
 
 @socket_io.on('ready')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
-def message(data):
+def ready(data):
     emit('ready', {'id': request.sid, 'data': data}, broadcast=True, to_room=data['room_id'], skip_sid=request.sid)
     return Response('OK')
 
 @socket_io.on('mutate')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def mutate(data):
-    emit('mutate', {'id': request.sid, 'roomID': data['roomID']}, broadcast=True, to_room=data['roomID'], skip_sid=request.sid)
+    room_id = data['room_id'] if 'room_id' in data else ''
+    print('received mutate')
+    emit('mutate', {'id': request.sid, 'roomID': room_id}, broadcast=True, to_room=room_id, skip_sid=request.sid)
     return Response('OK')
 
 @socket_io.on('data_transfer')
