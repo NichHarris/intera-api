@@ -28,6 +28,16 @@ def join(data):
     emit('ready', broadcast=True, to=room_id, skip_sid=request.sid)   
     return Response(f'{request.sid} has joined room id {room_id}.')
 
+@socket_io.on('join_msg')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+def join_msg(data):
+    user = data['user'] if 'user' in data else ''
+    room_id = data['room_id'] if 'room_id' in data else ''
+
+    join_room(room_id)
+    emit('mutate', {'user': user, 'room_id': room_id}, broadcast=True, to_room=room_id, skip_sid=request.sid)
+    return Response('OK')
+
 @socket_io.on('leave')
 @cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
 def leave(data):
@@ -42,6 +52,15 @@ def leave(data):
     emit('leave', {'user': user, 'user_sid': request.sid}, broadcast=True, to=room_id)
 
     leave_room(room_id)
+    return Response('OK')
+
+@socket_io.on('ping')
+@cross_origin(headers=["Origin", "Content-Type", "Authorization", "Accept"], supports_credentials=True)
+def ping(data):
+    room_id = data['room_id'] if 'room_id' in data else ''
+    user = data['user'] if 'user' in data else ''
+    
+    emit('pong', {'data': f'Pong from room {room_id} for user {user}'}, broadcast=True, to=request.sid)
     return Response('OK')
 
 @socket_io.on('message')
